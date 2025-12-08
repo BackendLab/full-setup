@@ -1,0 +1,28 @@
+# Node and build stuff
+node_modules
+dist
+build
+
+# Environment files
+.env
+.env.*   # .env.dev, .env.prod, etc.
+
+# Logs
+*.log
+logs
+
+# OS files
+.DS_Store
+
+# Public/static assets
+public/uploads
+public/temp
+
+# Ignore compiled types
+*.tsbuildinfo
+
+# Coverage / testing output
+coverage
+
+# Anything generated automatically
+*.sqlite
