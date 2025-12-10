@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
+// interface must extends Document only when we need mongoose inbuild methods otherwise, No need of that
 export interface IVideo {
   videofile: string;
   title: string;
@@ -74,5 +76,8 @@ const videoSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Added a plugin of mongoose aggregate paginate version 2 for pagination
+videoSchema.plugin(mongooseAggregatePaginate);
 
 export const Video = mongoose.model<IVideo>("Video", videoSchema);
