@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 export interface IUser {
   username: string;
@@ -36,7 +37,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
     password: {
-      // must stored hasehed password
+      // must store hasehed password
       type: String,
       required: true,
     },
@@ -71,5 +72,20 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Adding password hashing algorithm using bcrypt
+// NOTE: hashing password must be written inside user schema because it helps us to segregate the logic
+userSchema.pre("save", async function () {
+  // adding check for password do not get hashed on every save
+  if (!this.isModified("password")) return;
+  // hashing the password before save
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+// Adding Comparing apssword algorith using bcrypt
+// NOTE: This bcrypt method helps in comapring password with getting password as a string and hashed password
+userSchema.methods.comparePassword = async function (password: string) {
+  return await bcrypt.compare(password, this.password);
+};
 
 export const User = mongoose.model<IUser>("User", userSchema);
