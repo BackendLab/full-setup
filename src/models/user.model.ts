@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import jwt, { type SignOptions } from "jsonwebtoken";
 
 export interface IUser {
   username: string;
@@ -84,8 +85,30 @@ userSchema.pre("save", async function () {
 
 // Adding Comparing apssword algorith using bcrypt
 // NOTE: This bcrypt method helps in comapring password with getting password as a string and hashed password
+
 userSchema.methods.comparePassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
+};
+
+// adding method for Access token using jwt - This function will be a syncronous function
+userSchema.methods.generateAccessToken = function () {
+  const payload = { _id: this._id };
+  const secret = Bun.env.ACCESS_TOKEN_SECRET!;
+  const options: SignOptions = {
+    expiresIn: Number(Bun.env.ACCESS_TOKEN_EXPIRY),
+  };
+  return jwt.sign(payload, secret, options);
+};
+
+// adding mehtod for refresh token using jwt - This func also a sync func
+userSchema.methods.generateRefrshToken = function () {
+  const payload = { _id: this._id };
+  const secret = Bun.env.REFRESH_TOKEN_SECRET!;
+  const options: SignOptions = {
+    expiresIn: Number(Bun.env.REFRESH_TOKEN_SECRET),
+  };
+
+  return jwt.sign(payload, secret, options);
 };
 
 export const User = mongoose.model<IUser>("User", userSchema);
