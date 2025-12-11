@@ -20,6 +20,7 @@ const uploadToCloudinary = async (localFilePath: string) => {
   } catch (error) {
     // if the uploading fails then also remove the file from storage
     fs.unlinkSync(localFilePath);
+    // logging error
     console.error(error);
     return null;
   }
