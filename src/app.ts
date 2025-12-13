@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+// All Route imports
+import authRoutes from "./routes/auth.routes";
+
 export const app = express();
 
 // middleware for express json limit
@@ -20,3 +23,6 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 // middleware for cookie-parser
 app.use(cookieParser());
+
+// All Routes implemented
+app.use("/api/v1/auth", authRoutes);

@@ -5,7 +5,7 @@ const Port = Bun.env.PORT || 8000;
 
 connectDB()
   .then(() => {
-    app.listen((Port) => {
+    app.listen(() => {
       console.log("Server is running on Port:", Port);
     });
   })
