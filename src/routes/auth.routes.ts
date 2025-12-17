@@ -7,6 +7,6 @@ const router = Router();
 router.post("/register", registerUser);
 
 // Method 2 - it make the route seprately and used when multiple HTTP methods exists on same route like GET, POST, DELETE
-router.route("/register").post(registerUser);
+// router.route("/register").post(registerUser);
 
 export default router;
