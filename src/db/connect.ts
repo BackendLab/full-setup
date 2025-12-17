@@ -10,7 +10,7 @@ export const connectDB = async (): Promise<void> => {
 
       // Timeout Settings
       // -----------------------------------
-      serverSelectionTimeoutMS: 5000, // Time to find a server - 5 seconds
+      serverSelectionTimeoutMS: 5000, // Time to find a server to do operations - 5 seconds
       socketTimeoutMS: 45000, // Time for socket operations - 45 seconds
       connectTimeoutMS: 10000, // Time to establish connections - 10 seconds
 
@@ -30,7 +30,8 @@ export const connectDB = async (): Promise<void> => {
     };
 
     const connectionInstance = await mongoose.connect(
-      `${Bun.env.MONGO_URI}/${Bun.env.DB_NAME}`
+      `${Bun.env.MONGO_URI}/${Bun.env.DB_NAME}`,
+      options
     );
     console.log(
       "Database connection established successfully!",
