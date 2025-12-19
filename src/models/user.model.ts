@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt, { type SignOptions } from "jsonwebtoken";
 
-export interface IUser {
+export interface IUser extends Document {
   username: string;
   fullName: string;
   email: string;
@@ -15,6 +15,9 @@ export interface IUser {
   coverImage: string;
   createdAt: Date;
   updatedAt: Date;
+  comparePassword(password: string): Promise<boolean>;
+  generateAccessToken(): string;
+  generateRefreshToken(): string;
 }
 
 const userSchema = new mongoose.Schema(
@@ -83,7 +86,7 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// Adding Comparing apssword algorith using bcrypt
+// Adding Comparing password algorith using bcrypt
 // NOTE: This bcrypt method helps in comapring password with getting password as a string and hashed password
 
 userSchema.methods.comparePassword = async function (password: string) {
