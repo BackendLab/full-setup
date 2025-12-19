@@ -1,6 +1,7 @@
 import { User } from "../models/user.model";
 import { ApiError } from "../utils/apiError";
 
+// Register User Types
 interface RegisterUserPayload {
   username: string;
   fullName: string;
@@ -8,6 +9,14 @@ interface RegisterUserPayload {
   password: string;
 }
 
+// Login User Types
+interface LoginUserPayload {
+  identifier: string;
+  password: string;
+}
+
+// Register User service
+// -------------------------
 export const registerUserService = async ({
   username,
   fullName,
@@ -38,4 +47,43 @@ export const registerUserService = async ({
   );
 
   return safeUser;
+};
+
+// Login User service
+// -------------------------
+export const loginUserService = async ({
+  identifier,
+  password,
+}: LoginUserPayload) => {
+  // first check if the user gave email or username
+  const isEmail = identifier.includes("@");
+  // check if the user exists or not
+  const existingUser = await User.findOne(
+    isEmail ? { email: identifier } : { username: identifier }
+  );
+
+  if (!existingUser) {
+    throw new ApiError(409, "User does not exist");
+  }
+  // if the existing user exist then check if the password is valid or not
+  const isPasswordValid = await existingUser.comparePassword(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(404, "User credentials are invalid");
+  }
+  // generate access Token & refresh Token
+  // NOTE: Token generation are always syncronous
+  const accessToken = existingUser.generateAccessToken();
+  const refreshToken = existingUser.generateRefreshToken();
+
+  // update the refresh Token feild with newly generated one
+  existingUser.refreshToken = refreshToken;
+  await existingUser.save({ validateBeforeSave: false });
+
+  // remove password and refresh token feilds for security
+  const safeUser = await User.findById(existingUser._id).select(
+    "-password -refreshToekn"
+  );
+
+  return { user: safeUser, accessToken, refreshToken };
 };
