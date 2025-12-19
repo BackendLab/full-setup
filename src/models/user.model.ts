@@ -10,7 +10,7 @@ export interface IUser extends Document {
   watchHistory: mongoose.Schema.Types.ObjectId;
   subscribers: number;
   channelSubscribed: mongoose.Schema.Types.ObjectId;
-  refreshToken: mongoose.Schema.Types.ObjectId;
+  refreshToken: string;
   avatar: string;
   coverImage: string;
   createdAt: Date;
@@ -70,8 +70,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     refreshToken: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "RefreshToken",
+      type: String,
     },
   },
   { timestamps: true }
