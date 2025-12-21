@@ -1,6 +1,7 @@
 // NOTE: inside controller only HTTP request logic comes no business logic, no routing, no databse
 import {
   loginUserService,
+  logoutUserService,
   registerUserService,
 } from "../services/auth.service";
 import { ApiError } from "../utils/apiError";
@@ -69,22 +70,35 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, "Login successful", user));
 });
 
-// Logout User
-// 1. Verify is user loged in or not (Middleware)
-// -- how to verify that - first get the access token from cookies
-// - Then check if the token is valid or not
-// - Once get the token than verify if that token is same as saved in db
-// - Now find the user through id and remove password
-// - check if user exists or not
-// - save user inside request
-// - call next()
+export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
+  // check if user id exists or not - This step is neccessarily cause typscript thinks userId is possibily undefined
+  if (!req.user) {
+    throw new ApiError(401, "User not authorized");
+  }
+  // get user Id from req
+  const userId = req.user._id;
+  // Call Service
+  await logoutUserService(userId.toString());
+
+  // clear cookies
+  res
+    // cleared Access Token
+    .clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    })
+    // cleared Refresh Token
+    .clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    })
+    .status(201)
+    .json(new ApiResponse(200, "Logged Out Successfully", null)); // why null as 3rd argument because there is no data to send in response
+});
 
 // 2. Add logoutUser method to controller (Controller) - it's a HTTP request logic only
 // - get the user through req cause user is now called from req
 // - call the service with user id
 // remove the cokkies
-
-// 3. Add business logout inside service (Auth service) - it's only a business logic where we query data from DB
-// - get user id from controller as param
-// - then find the user and update refresh token to undefined
-// - return true
