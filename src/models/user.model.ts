@@ -10,7 +10,7 @@ export interface IUser extends Document {
   watchHistory: mongoose.Schema.Types.ObjectId;
   subscribers: number;
   channelSubscribed: mongoose.Schema.Types.ObjectId;
-  refreshToken: string;
+  refreshToken?: string;
   avatar: string;
   coverImage: string;
   createdAt: Date;
