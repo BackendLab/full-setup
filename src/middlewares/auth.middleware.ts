@@ -28,7 +28,15 @@ export const verifyJwt = asyncHandler(
     if (!user) {
       throw new ApiError(409, "User does not exists!");
     }
-
+    // NOTE: At this point everyhting works fine, but when we assign user to req.user then typescript will scream that it doesn't know what user is, So typesript sees it like
+    // interface Request {
+    // body: any;
+    // params: any;
+    // query: any;
+    // ❌ no user
+    // }
+    // So what should we do - Extend Express's Request type globally
+    // And this method of adding types is "MODULE AUGMENTATION"
     req.user = user;
     next();
   }
