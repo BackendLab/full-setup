@@ -46,7 +46,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, "All feilds are required");
   }
   // Call the login service
-  // what this does the controller sends the payload to se4rvice then service do some checks and query to databaswe then gets the data and then give that back to controller. So the controller sends the repsonse of the request user asked
+  // what this does the controller sends the payload to serrvice then service do some checks and query to databaswe then gets the data and then give that back to controller. So the controller sends the repsonse of the request user asked
   const { user, accessToken, refreshToken } = await loginUserService({
     identifier,
     password,
@@ -68,3 +68,23 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     })
     .json(new ApiResponse(200, "Login successful", user));
 });
+
+// Logout User
+// 1. Verify is user loged in or not (Middleware)
+// -- how to verify that - first get the access token from cookies
+// - Then check if the token is valid or not
+// - Once get the token than verify if that token is same as saved in db
+// - Now find the user through id and remove password
+// - check if user exists or not
+// - save user inside request
+// - call next()
+
+// 2. Add logoutUser method to controller (Controller) - it's a HTTP request logic only
+// - get the user through req cause user is now called from req
+// - call the service with user id
+// remove the cokkies
+
+// 3. Add business logout inside service (Auth service) - it's only a business logic where we query data from DB
+// - get user id from controller as param
+// - then find the user and update refresh token to undefined
+// - return true
