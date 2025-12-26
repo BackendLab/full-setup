@@ -3,6 +3,7 @@ import {
   loginUserService,
   logoutUserService,
   registerUserService,
+  tokenRotationService,
 } from "../services/auth.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -70,6 +71,12 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, "Login successful", user));
 });
 
+// Logout user controller
+// --------------------------
+// 2. Add logoutUser method to controller (Controller) - it's a HTTP request logic only
+// - get the user through req cause user is now called from req
+// - call the service with user id
+// remove the cokkies
 export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   // check if user id exists or not - This step is neccessarily cause typscript thinks userId is possibily undefined
   if (!req.user) {
@@ -98,7 +105,45 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, "Logged Out Successfully", null)); // why null as 3rd argument because there is no data to send in response
 });
 
-// 2. Add logoutUser method to controller (Controller) - it's a HTTP request logic only
-// - get the user through req cause user is now called from req
-// - call the service with user id
-// remove the cokkies
+// Refresh Token Rotation - What goes inside controller
+// 1. get refresh token from user
+// 2. call the service to rotate the refresh token
+// 3. give back the response with new Access and Refresh Token
+export const tokenRotation = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get refresh token from user cookies
+    const incomingRefreshToken = req.cookies?.refreshToken;
+
+    // check if the incoming refresh exists or not
+    if (!incomingRefreshToken) {
+      throw new ApiError(409, "Refresh token does not exist");
+    }
+
+    // Call the Service
+    const { accessToken, refreshToken } =
+      await tokenRotationService(incomingRefreshToken);
+
+    // response
+    res
+      .status(201)
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        sameSite: true,
+        secure: true,
+        maxAge: Number(Bun.env.ACCESS_TOKEN_MAX_AGE),
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: true,
+        secure: true,
+        maxAge: Number(Bun.env.REFRESH_TOKEN_MAX_AGE),
+      })
+      .json(
+        new ApiResponse(
+          201,
+          "Access And Refresh Token refresh successfully",
+          null
+        )
+      );
+  }
+);

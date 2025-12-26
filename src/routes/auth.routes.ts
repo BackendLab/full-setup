@@ -3,6 +3,7 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  tokenRotation,
 } from "../controllers/auth.controller";
 import { verifyJwt } from "../middlewares/auth.middleware";
 
@@ -14,6 +15,7 @@ router.post("/login", loginUser);
 
 // Secured Routes
 router.post("/logout", verifyJwt, logoutUser);
+router.post("/refresh-token", tokenRotation);
 
 // Method 2 - it make the route seprately and used when multiple HTTP methods exists on same route like GET, POST, DELETE
 // router.route("/register").post(registerUser);
