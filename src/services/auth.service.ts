@@ -1,5 +1,6 @@
 import { User } from "../models/user.model";
 import { ApiError } from "../utils/apiError";
+import jwt from "jsonwebtoken";
 
 // Register User Types
 interface RegisterUserPayload {
@@ -13,6 +14,10 @@ interface RegisterUserPayload {
 interface LoginUserPayload {
   identifier: string;
   password: string;
+}
+
+interface RefreshTokenPayload {
+  incomingRefreshToken: string;
 }
 
 // Register User service
@@ -55,6 +60,7 @@ export const registerUserService = async ({
 
 // Login User service
 // -------------------------
+
 export const loginUserService = async ({
   identifier,
   password,
@@ -97,6 +103,12 @@ export const loginUserService = async ({
   }
 };
 
+// Logout User
+// --------------------
+// 3. Add business logout inside service (Auth service) - it's only a business logic where we query data from DB
+// - get user id from controller as param
+// - then find the user and update refresh token to undefined
+// - return true
 export const logoutUserService = async (userId: string) => {
   try {
     // Get user by id
@@ -115,7 +127,47 @@ export const logoutUserService = async (userId: string) => {
     throw error;
   }
 };
-// 3. Add business logout inside service (Auth service) - it's only a business logic where we query data from DB
-// - get user id from controller as param
-// - then find the user and update refresh token to undefined
-// - return true
+
+// Refresh Token Rotaion - What goes inside service
+// 1. get incoming refresh token from controller
+// 2. verify if the incoming rfresh token is same as token saved in DB
+// 3. after verify get the user from DB
+// 4. check if the refresh token is used or expired
+// 5. if the token is reused or expired then remove the refresh token from DB this makes user logout forcefully
+// 6. after checking generate the new Access & refresh tokens
+// 7. update refresh toke with the new one
+// 8. return both tokens to the controller
+export const tokenRotationService = async (incomingRefreshToken: string) => {
+  try {
+    // Verify the incoming token with existing one
+    const verifyToken = jwt.verify(
+      incomingRefreshToken,
+      Bun.env.REFRESH_TOKEN_SECRET!
+    ) as { _id: string };
+
+    // Get the user from DB
+    const user = await User.findById(verifyToken._id);
+
+    // check if the incoming refresh token is same as saved in DB
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError(401, "Refresh Token is reused or expired");
+    }
+
+    // if refresh token is tampered then make user logout
+    user.refreshToken = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    // Generate new tokens
+    const newAccessToken = user.generateAccessToken();
+    const newRefreshToken = user.generateRefreshToken();
+
+    // update refresh token with new one
+    user.refreshToken = newRefreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    // returning token to controller
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+  } catch (error) {
+    throw error;
+  }
+};
