@@ -7,6 +7,7 @@ export interface IUser extends Document {
   fullName: string;
   email: string;
   password: string;
+  bio: string;
   watchHistory: mongoose.Schema.Types.ObjectId;
   subscribers: number;
   channelSubscribed: mongoose.Schema.Types.ObjectId;
@@ -44,6 +45,11 @@ const userSchema = new mongoose.Schema(
       // must store hasehed password
       type: String,
       required: true,
+    },
+    bio: {
+      type: String,
+      default: "",
+      maxLength: 500,
     },
     watchHistory: [
       {
@@ -86,7 +92,7 @@ userSchema.pre("save", async function () {
 });
 
 // Adding Comparing password algorith using bcrypt
-// NOTE: This bcrypt method helps in comapring password with getting password as a string and hashed password
+// NOTE: This bcrypt method helps in comparing password with getting password as a string and hashed password
 
 userSchema.methods.comparePassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
