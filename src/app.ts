@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 
 // All Route imports
 import authRoutes from "./routes/auth.routes";
+import userRoutes from "./routes/user.routes";
 
 export const app = express();
 
@@ -25,4 +26,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
 
 // All Routes implemented
+// Auth route
 app.use("/api/v1/auth", authRoutes);
+// User Route
+app.use("/api/v1/user", userRoutes);

@@ -6,6 +6,7 @@ import type { Request, Response } from "express";
 
 export const getCurrentUser = asyncHandler(
   async (req: Request, res: Response) => {
+    // check before fetching Id from req.user cause typescript shout about the type of userId
     if (!req.user) {
       throw new ApiError(401, "Unauthorized user");
     }
