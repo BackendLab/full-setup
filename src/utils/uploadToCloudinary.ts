@@ -5,7 +5,7 @@
 import cloudinary from "../config/cloudinary";
 import fs from "fs";
 
-const uploadToCloudinary = async (localFilePath: string) => {
+export const uploadToCloudinary = async (localFilePath: string) => {
   try {
     // checking if the local file path exists or not
     if (!localFilePath) return null;
@@ -25,5 +25,3 @@ const uploadToCloudinary = async (localFilePath: string) => {
     return null;
   }
 };
-
-export { uploadToCloudinary };

@@ -69,11 +69,21 @@ const userSchema = new mongoose.Schema(
     ],
     avatar: {
       // Cloudinary Image String
-      type: String,
+      url: {
+        type: String,
+      },
+      publicId: {
+        type: String,
+      },
     },
     coverImage: {
       // Cloudinary Image String
-      type: String,
+      url: {
+        type: String,
+      },
+      publicId: {
+        type: String,
+      },
     },
     refreshToken: {
       type: String,
@@ -109,11 +119,11 @@ userSchema.methods.generateAccessToken = function () {
 };
 
 // adding mehtod for refresh token using jwt - This func also a sync func
-userSchema.methods.generateRefrshToken = function () {
+userSchema.methods.generateRefreshToken = function () {
   const payload = { _id: this._id };
   const secret = Bun.env.REFRESH_TOKEN_SECRET!;
   const options: SignOptions = {
-    expiresIn: Number(Bun.env.REFRESH_TOKEN_SECRET),
+    expiresIn: Number(Bun.env.REFRESH_TOKEN_EXPIRY),
   };
 
   return jwt.sign(payload, secret, options);
