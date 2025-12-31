@@ -2,6 +2,7 @@ import {
   getCurrentUserService,
   updateUserService,
   updateAvatarService,
+  updateCoverImageService,
 } from "../services/user.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -82,6 +83,39 @@ export const updateAvatar = asyncHandler(
       .status(200)
       .json(
         new ApiResponse(200, "Avatar updated successfully!", uploadedAvatar)
+      );
+  }
+);
+
+// Update Cover Image
+export const updateCoverImage = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the user form req.user
+    const userId = req.user?._id;
+    // check if user exists or not
+    if (!userId) {
+      throw new ApiError(401, "User not authorized");
+    }
+    // get this file from req.file
+    const filePath = req.file?.path;
+    // ckeck if the file path exists or not
+    if (!filePath) {
+      throw new ApiError(400, "file does not found");
+    }
+    // call the service
+    const uploadedCoverImage = await updateCoverImageService(
+      userId.toString(),
+      filePath
+    );
+    // give response back to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Cover Image updated successfully!",
+          uploadedCoverImage
+        )
       );
   }
 );
