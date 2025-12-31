@@ -2,6 +2,10 @@ import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt, { type SignOptions } from "jsonwebtoken";
 
+interface CloudinaryFiles {
+  url?: string;
+  publicId?: string;
+}
 export interface IUser extends Document {
   username: string;
   fullName: string;
@@ -12,8 +16,8 @@ export interface IUser extends Document {
   subscribers: number;
   channelSubscribed: mongoose.Schema.Types.ObjectId;
   refreshToken?: string;
-  avatar: string;
-  coverImage: string;
+  avatar: CloudinaryFiles;
+  coverImage: CloudinaryFiles;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -72,7 +76,7 @@ const userSchema = new mongoose.Schema(
       url: {
         type: String,
       },
-      publicId: {
+      avatarPublicId: {
         type: String,
       },
     },
@@ -81,7 +85,7 @@ const userSchema = new mongoose.Schema(
       url: {
         type: String,
       },
-      publicId: {
+      coverImagePublicId: {
         type: String,
       },
     },

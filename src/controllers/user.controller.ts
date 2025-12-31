@@ -1,6 +1,7 @@
 import {
   getCurrentUserService,
   updateUserService,
+  updateAvatarService,
 } from "../services/user.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -52,3 +53,35 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
       new ApiResponse(200, "User profile updated successfully!", updatedUser)
     );
 });
+
+// Update Avatar
+export const updateAvatar = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the user Id from req.user
+    const userId = req.user?._id;
+
+    // check if the user exist or not in req.user
+    if (!userId) {
+      throw new ApiError(401, "User not authorized");
+    }
+
+    // get the file from user from req.file
+    const filePath = req.file?.path;
+
+    //check if file exists or not inside req.file
+    if (!filePath) {
+      throw new ApiError(400, "file does not exist");
+    }
+    // call the service
+    const uploadedAvatar = await updateAvatarService(
+      userId.toString(),
+      filePath
+    );
+    // give the response back to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Avatar updated successfully!", uploadedAvatar)
+      );
+  }
+);
