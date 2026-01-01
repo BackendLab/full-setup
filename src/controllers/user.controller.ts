@@ -4,6 +4,7 @@ import {
   updateAvatarService,
   updateCoverImageService,
   changePasswordService,
+  deleteUserService,
 } from "../services/user.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -165,3 +166,21 @@ export const changePassword = asyncHandler(
       );
   }
 );
+
+// Delete user
+export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
+  // get the userId from req.suer
+  const userId = req.user?._id;
+  // check if user Id exists or not
+  if (!userId) {
+    throw new ApiError(401, "User is not authorized!");
+  }
+  // call service
+  await deleteUserService(userId.toString());
+  // give response back to the client
+  res
+    .status(200)
+    .clearCookie("accessToken")
+    .clearCookie("refreshToken")
+    .json(new ApiResponse(200, "User Deleted Successfully!", null));
+});

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { verifyJwt } from "../middlewares/auth.middleware";
 import {
   changePassword,
+  deleteUser,
   getCurrentUser,
   updateAvatar,
   updateCoverImage,
@@ -22,5 +23,6 @@ router.patch(
   updateCoverImage
 );
 router.patch("/change-password", verifyJwt, changePassword);
+router.delete("/me", verifyJwt, deleteUser);
 
 export default router;

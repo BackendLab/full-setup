@@ -177,3 +177,22 @@ export const changePasswordService = async (
   await user.save();
   // nothing to return
 };
+
+// Delete User Service
+export const deleteUserService = async (userId: string) => {
+  // get the user from DB
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(401, "User does not exist");
+  }
+  // delete all cloudinary files
+  if (user?.avatar?.publicId) {
+    await deleteFromCloudinary(user?.avatar?.publicId);
+  }
+  if (user?.coverImage?.publicId) {
+    await deleteFromCloudinary(user?.coverImage?.publicId);
+  }
+  // delete the user
+  await User.findByIdAndDelete(userId);
+};
