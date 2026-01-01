@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { verifyJwt } from "../middlewares/auth.middleware";
 import {
+  changePassword,
   getCurrentUser,
   updateAvatar,
   updateCoverImage,
@@ -20,5 +21,6 @@ router.patch(
   upload.single("coverImage"),
   updateCoverImage
 );
+router.patch("/change-password", verifyJwt, changePassword);
 
 export default router;

@@ -50,7 +50,7 @@ import cloudinary from "../config/cloudinary";
 export const deleteFromCloudinary = async (
   publicId: string
 ): Promise<boolean> => {
-  // ckeck if the publicId si missing or not
+  // ckeck if the publicId is missing or not
   if (!publicId) return true; // return true means no publicId exist so image is already deleted
 
   try {

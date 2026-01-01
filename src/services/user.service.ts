@@ -11,7 +11,13 @@ interface updateUserPayload {
   bio: string;
 }
 
-// Get Current User business logic
+// Interface for Changing Password
+interface ChangePassword {
+  oldPassword: string;
+  newPassword: string;
+}
+
+// Get Current User Service
 export const getCurrentUserService = async (userId: string) => {
   try {
     // get the user from db and sanitize it
@@ -27,7 +33,7 @@ export const getCurrentUserService = async (userId: string) => {
   }
 };
 
-// Update the user profile business logic
+// Update the user profile Service
 export const updateUserService = async (
   userId: string,
   { fullName, username, bio }: updateUserPayload // Accept user ID and all the fields
@@ -64,7 +70,7 @@ export const updateUserService = async (
   }
 };
 
-// Upload avatar
+// Upload avatar Service
 export const updateAvatarService = async (userId: string, filePath: string) => {
   try {
     // get the user form userId
@@ -101,7 +107,7 @@ export const updateAvatarService = async (userId: string, filePath: string) => {
   }
 };
 
-// Update Cover Image
+// Update Cover Image Service
 export const updateCoverImageService = async (
   userId: string,
   filePath: string
@@ -138,4 +144,36 @@ export const updateCoverImageService = async (
 
   // return the update coverimage
   return { user: safeUser };
+};
+
+// Change password Service
+export const changePasswordService = async (
+  // Accept the userID and payload from controller as param
+  userId: string,
+  { oldPassword, newPassword }: ChangePassword
+) => {
+  // Get the user from DB
+  const user = await User.findById(userId);
+  // Check if user exists or not
+  if (!user) {
+    throw new ApiError(401, "User does not exist");
+  }
+  // compare current password with the stored one
+  const isMatch = await user.comparePassword(oldPassword);
+  // check if the old password is same as stored in db or not
+  if (!isMatch) {
+    throw new ApiError(400, "Old password is incoorect!");
+  }
+  // prevent same password issue old and new must not the same
+  if (oldPassword === newPassword) {
+    throw new ApiError(400, "New password must be different!");
+  }
+  // update password
+  user.password = newPassword;
+
+  // inavlidate sessions
+  user.refreshToken = undefined;
+  // save the user
+  await user.save();
+  // nothing to return
 };

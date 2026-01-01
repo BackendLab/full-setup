@@ -3,6 +3,7 @@ import {
   updateUserService,
   updateAvatarService,
   updateCoverImageService,
+  changePasswordService,
 } from "../services/user.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -115,6 +116,51 @@ export const updateCoverImage = asyncHandler(
           200,
           "Cover Image updated successfully!",
           uploadedCoverImage
+        )
+      );
+  }
+);
+
+// Change Password
+export const changePassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get userId from req.user
+    const userId = req.user?._id;
+
+    if (!userId) {
+      throw new ApiError(401, "User not authorized");
+    }
+    // get old and new password from the user in req.body
+    const { oldPassword, newPassword } = req.body;
+
+    // validate both inputs exists or not
+    if (!oldPassword || !newPassword) {
+      throw new ApiError(400, "All Fields are required!");
+    }
+
+    // call the service
+    await changePasswordService(userId.toString(), {
+      oldPassword,
+      newPassword,
+    });
+    // give back the response to the client
+    res
+      .status(200)
+      .clearCookie("accessToken", {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: true,
+      })
+      // cleared Refresh Token
+      .clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "strict",
+      })
+      .json(
+        new ApiResponse(
+          200,
+          "Password Chnaged Successfully!, Please log-in again",
+          null
         )
       );
   }
