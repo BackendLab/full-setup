@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
+      index: true,
     },
     password: {
       // must store hasehed password
@@ -75,7 +76,7 @@ const userSchema = new mongoose.Schema(
       url: {
         type: String,
       },
-      avatarPublicId: {
+      publicId: {
         type: String,
       },
     },
@@ -84,7 +85,7 @@ const userSchema = new mongoose.Schema(
       url: {
         type: String,
       },
-      coverImagePublicId: {
+      publicId: {
         type: String,
       },
     },
@@ -94,6 +95,10 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Indexes
+userSchema.index({ username: 1 }, { unique: true });
+userSchema.index({ email: 1 }, { unique: true });
 
 // Adding password hashing algorithm using bcrypt
 // NOTE: hashing password must be written inside user schema because it helps us to segregate the logic
