@@ -18,9 +18,10 @@ export const registerUser = asyncHandler(
     const { username, fullName, email, password } = req.body;
 
     // check if all the fields are available or not
-    if (!username || !fullName || !email || !password) {
-      throw new ApiError(400, "All feilds are required!");
-    }
+    // if (!username || !fullName || !email || !password) {
+    //   throw new ApiError(400, "All feilds are required!");
+    // }
+    // Note: Zod validation is applied here, so no need for if else check
 
     // Call the service
     const user = await registerUserService({
@@ -44,11 +45,13 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { identifier, password } = req.body;
 
   // check if all the feilds are available or not
-  if (!identifier || !password) {
-    throw new ApiError(404, "All feilds are required");
-  }
+  // if (!identifier || !password) {
+  //   throw new ApiError(404, "All feilds are required");
+  // }
+  // Note: Zod validation is applied here, so no need for if else check
+
   // Call the login service
-  // what this does the controller sends the payload to serrvice then service do some checks and query to databaswe then gets the data and then give that back to controller. So the controller sends the repsonse of the request user asked
+  // what this does the controller sends the payload to serrvice then service do some checks and query to database then gets the data and then give that back to controller. So the controller sends the repsonse of the request that user asked
   const { user, accessToken, refreshToken } = await loginUserService({
     identifier,
     password,
