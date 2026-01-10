@@ -13,7 +13,7 @@ export interface IVideo {
   views: number;
   likesCount: number;
   commentsCount: number;
-  owner: mongoose.Schema.Types.ObjectId;
+  owner: mongoose.Types.ObjectId;
   isPublished: boolean;
 }
 

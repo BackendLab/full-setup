@@ -12,9 +12,9 @@ export interface IUser extends Document {
   email: string;
   password: string;
   bio: string;
-  watchHistory: mongoose.Schema.Types.ObjectId;
+  watchHistory: mongoose.Types.ObjectId[];
   subscribers: number;
-  channelSubscribed: mongoose.Schema.Types.ObjectId;
+  channelSubscribed: mongoose.Types.ObjectId[];
   refreshToken?: string;
   avatar: CloudinaryFiles;
   coverImage: CloudinaryFiles;

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export interface ISubscription {
-  subscriber: mongoose.Schema.Types.ObjectId;
-  channel: mongoose.Schema.Types.ObjectId;
+  subscriber: mongoose.Types.ObjectId;
+  channel: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,6 +22,8 @@ const subscriptionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+subscriptionSchema.index({ subscriber: 1, channel: 1 }, { unique: true });
 
 export const Subscription = mongoose.model<ISubscription>(
   "Subscription",

@@ -6,7 +6,7 @@ interface CloudinaryFiles {
 }
 
 export interface IChannel {
-  owner: mongoose.Schema.Types.ObjectId;
+  owner: mongoose.Types.ObjectId;
   name: string;
   handle: string;
   description: string;
