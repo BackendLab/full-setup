@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { Subscription } from "../models/subscription.model";
 import { ApiError } from "../utils/apiError";
+import { Channel } from "../models/channel.model";
 
 // Subscribe Service
 export const subscribeService = async (
@@ -12,12 +13,21 @@ export const subscribeService = async (
   if (subscriberId === channelId) {
     throw new ApiError(400, "You cannot subscribe to yourself");
   }
-  // create subscriber and chennel relationship
   try {
+    // create subscriber and chennel relationship
     await Subscription.create({
       subscriber: new Types.ObjectId(subscriberId),
       channel: new Types.ObjectId(channelId),
     });
+    // update subscriber count after subscribtion relationship is successfull
+    await Channel.updateOne(
+      { _id: channelId },
+      {
+        $inc: {
+          subscriberCount: 1,
+        },
+      }
+    );
   } catch (error: any) {
     if (error.code === 11000) {
       throw new ApiError(409, "Already subscribed");
@@ -42,6 +52,16 @@ export const unsubscribeService = async (
     if (!result) {
       throw new ApiError(404, "Subscription Not Found");
     }
+
+    // update subscriber count after Unsubscription realtionship is successfull
+    await Channel.updateOne(
+      { _id: channelId },
+      {
+        $inc: {
+          subscriberCount: -1,
+        },
+      }
+    );
   } catch (error) {
     throw error;
   }
