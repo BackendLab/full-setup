@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 // All Route imports
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import subscriptionRoutes from "./routes/subscription.routes";
 
 export const app = express();
 
@@ -30,3 +31,5 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRoutes);
 // User Route
 app.use("/api/v1/user", userRoutes);
+// Subscription Route
+app.use("/api/v1/subscription", subscriptionRoutes);
