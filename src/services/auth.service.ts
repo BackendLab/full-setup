@@ -56,7 +56,9 @@ export const registerUserService = async ({
     });
 
     // throw error if user registered but channel is not created successfully
+    // NOTE: delete the user if channel is not created cause if user is created so channel must be created as well if channel creation failed then delete that user as well cause we don't want to save any user without channel
     if (!channel) {
+      await User.findByIdAndDelete(user._id);
       throw new ApiError(500, "Channel creation failed");
     }
 
