@@ -1,3 +1,4 @@
+import { Channel } from "../models/channel.model";
 import { User } from "../models/user.model";
 import { ApiError } from "../utils/apiError";
 import jwt from "jsonwebtoken";
@@ -46,6 +47,22 @@ export const registerUserService = async ({
       password,
       subscribers: 0,
     });
+
+    // create channel after creating the user
+    const channel = await Channel.create({
+      owner: user._id,
+      name: fullName,
+      handle: username,
+    });
+
+    // throw error if user registered but channel is not created successfully
+    if (!channel) {
+      throw new ApiError(500, "Channel creation failed");
+    }
+
+    // update the channel feild in user
+    user.channel = channel._id;
+    await user.save({ validateBeforeSave: false });
 
     // Return the user with out password and tokens
     const safeUser = await User.findById(user._id).select(

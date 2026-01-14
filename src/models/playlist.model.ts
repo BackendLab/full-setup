@@ -31,7 +31,7 @@ const playlistSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel",
     },
-    isPublished: {
+    isPublic: {
       type: Boolean,
     },
   },

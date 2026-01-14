@@ -15,6 +15,7 @@ export interface IUser extends Document {
   watchHistory: mongoose.Types.ObjectId[];
   subscribers: number;
   channelSubscribed: mongoose.Types.ObjectId[];
+  channel: mongoose.Types.ObjectId;
   refreshToken?: string;
   avatar: CloudinaryFiles;
   coverImage: CloudinaryFiles;
@@ -73,6 +74,10 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    channel: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Channel",
+    },
     avatar: {
       // Cloudinary Image String
       url: {
