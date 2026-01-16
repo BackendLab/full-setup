@@ -29,6 +29,8 @@ export const subscribeService = async (
       }
     );
   } catch (error: any) {
+    // Check if the user already subscribed to channel or not
+    // NOTE: 11000 error code is MongoDB duplication key error code
     if (error.code === 11000) {
       throw new ApiError(409, "Already subscribed");
     }
