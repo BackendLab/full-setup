@@ -1,6 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt, { type SignOptions } from "jsonwebtoken";
+import { UserState } from "../constants";
 
 interface CloudinaryFiles {
   url?: string;
@@ -19,6 +20,7 @@ export interface IUser extends Document {
   refreshToken?: string;
   avatar: CloudinaryFiles;
   coverImage: CloudinaryFiles;
+  state: UserState;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -99,6 +101,11 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
+    state: {
+      type: String,
+      enum: Object.values(UserState),
+      default: UserState.ACTIVE,
+    },
   },
   { timestamps: true }
 );
@@ -106,6 +113,7 @@ const userSchema = new mongoose.Schema(
 // Indexes
 userSchema.index({ username: 1 }, { unique: true });
 userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ state: 1 });
 
 // Adding password hashing algorithm using bcrypt
 // NOTE: hashing password must be written inside user schema because it helps us to segregate the logic

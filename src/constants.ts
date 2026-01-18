@@ -1,26 +1,28 @@
 // Enums for Business state
 
 // User Status
-export enum UserStatus {
+export enum UserState {
   ACTIVE = "ACTIVE",
   BANNED = "BANNED",
-}
-
-// Video Status
-export enum VideoStatus {
-  PUBLIC = "PUBLIC",
-  PRIVATE = "PRIVATE",
-  UNLISTED = "UNLISTED",
+  DELETED = "DELETED",
 }
 
 // Channel Status
-export enum ChannelStatus {
+export enum ChannelState {
   ACTIVE = "ACTIVE",
   SUSPENDED = "SUSPENDED",
 }
 
+// Video Status
+export enum VideoState {
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
+  UNLISTED = "UNLISTED",
+  DELETED = "DELETED",
+}
+
 // Playlist Status
-export enum PalylistStatus {
+export enum PlaylistState {
   PUBLIC = "PUBLIC",
   PRIVATE = "PRIVATE",
 }
