@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UserState } from "../constants";
 
 // Update User Zod Schema
 export const updateUserSchema = z.object({
@@ -23,7 +24,7 @@ export const updateCoverImageSchema = z.object({
   }),
 });
 
-// Chnage Password Zod Schema
+// Change Password Zod Schema
 export const changePasswordSchema = z.object({
   body: z.object({
     oldPassword: z.string().min(1, "Old password is required"),
@@ -32,4 +33,9 @@ export const changePasswordSchema = z.object({
       .min(8, "New password must be 8 characters")
       .max(16, "New Password must noty be more than 16 characters"),
   }),
+});
+
+// User State Schema
+export const userStateSchema = z.object({
+  state: z.enum(UserState),
 });
