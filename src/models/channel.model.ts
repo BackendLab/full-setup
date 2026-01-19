@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ChannelState } from "../constants";
 
 interface CloudinaryFiles {
   url?: string;
@@ -13,6 +14,7 @@ export interface IChannel {
   avatar: CloudinaryFiles;
   coverImage: CloudinaryFiles;
   subscriberCount: number;
+  state: ChannelState;
 }
 
 const channelSchema = new mongoose.Schema(
@@ -62,8 +64,16 @@ const channelSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    state: {
+      type: String,
+      enum: Object.values(ChannelState),
+      default: ChannelState.ACTIVE,
+    },
   },
   { timestamps: true }
 );
+
+channelSchema.index({ owner: 1 });
+channelSchema.index({ state: 1 });
 
 export const Channel = mongoose.model<IChannel>("Channel", channelSchema);

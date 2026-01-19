@@ -5,7 +5,7 @@ import { UserState } from "../constants";
 
 export const checkUserState = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   // get the userId from req.user
