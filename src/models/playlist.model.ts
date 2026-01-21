@@ -1,11 +1,12 @@
 import mongoose, { Document } from "mongoose";
+import { PlaylistState } from "../constants";
 
 export interface IPlaylist extends Document {
   title: string;
   description?: string;
   videos: mongoose.Types.ObjectId[];
   channel: mongoose.Types.ObjectId;
-  isPublic: boolean;
+  state: PlaylistState;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,11 +32,17 @@ const playlistSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel",
     },
-    isPublic: {
-      type: Boolean,
+    state: {
+      type: String,
+      enum: Object.values(PlaylistState),
+      default: PlaylistState.PUBLIC,
     },
   },
   { timestamps: true }
 );
+
+// Indexes
+playlistSchema.index({ channel: 1, unique: 1 });
+playlistSchema.index({ state: 1, unique: 1 });
 
 export const Playlist = mongoose.model("Playlist", playlistSchema);
