@@ -24,6 +24,8 @@ export interface IVideo extends Document {
   playlist?: mongoose.Types.ObjectId;
   visibility: VideoVisibility;
   state: VideoState;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const videoSchema = new mongoose.Schema(

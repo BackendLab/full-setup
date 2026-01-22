@@ -10,7 +10,7 @@ export interface IChannel {
   owner: mongoose.Types.ObjectId;
   name: string;
   handle: string;
-  description: string;
+  bio: string;
   avatar: CloudinaryFiles;
   coverImage: CloudinaryFiles;
   subscriberCount: number;
@@ -35,7 +35,7 @@ const channelSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
     },
-    description: {
+    bio: {
       type: String,
       maxLength: 2000,
       default: "",
