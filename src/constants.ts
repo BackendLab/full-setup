@@ -15,14 +15,14 @@ export enum ChannelState {
 
 // Video Status
 export enum VideoState {
-  PUBLIC = "PUBLIC",
-  PRIVATE = "PRIVATE",
-  UNLISTED = "UNLISTED",
+  ACTIVE = "ACTIVE",
+  SUSPENDED = "SUSPENDED",
   DELETED = "DELETED",
 }
 
 // Playlist Status
 export enum PlaylistState {
-  PUBLIC = "PUBLIC",
-  PRIVATE = "PRIVATE",
+  ACTIVE = "ACTIVE",
+  SUSPENDED = "SUSPENDED",
+  DELETED = " DELETED",
 }

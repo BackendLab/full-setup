@@ -90,7 +90,7 @@ const videoSchema = new mongoose.Schema(
     state: {
       type: String,
       enum: Object.values(VideoState),
-      default: VideoState.PUBLIC,
+      default: VideoState.ACTIVE,
     },
   },
   { timestamps: true }
