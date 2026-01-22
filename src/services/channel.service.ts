@@ -3,12 +3,41 @@ import { Channel } from "../models/channel.model";
 import { ApiError } from "../utils/apiError";
 import { Subscription } from "../models/subscription.model";
 import { Playlist } from "../models/playlist.model";
-import { title } from "process";
+
+interface ChannelProfileResult {
+  channel: {
+    id: string;
+    name: string;
+    handle: string;
+    bio: string;
+    avatar: string;
+    coverImage: string;
+    subscribersCount: number;
+  };
+  isSubscribed: boolean;
+  featuredPlaylist: Array<{
+    _id: string;
+    title: string;
+    videos: Array<{
+      _id: string;
+      title: string;
+      desription: string;
+      thumbnail: string;
+      duration: number;
+      channel: {
+        _id: string;
+        name: string;
+      };
+      views: number;
+      createdAt: Date;
+    }>;
+  }>;
+}
 
 export const getChannelProfileService = async (
   viewerId: string,
   channelId: string
-) => {
+): Promise<ChannelProfileResult> => {
   // get the channel and viewer Id and cover it to ObjectId
   const channelObjectId = new Types.ObjectId(channelId);
 
@@ -73,19 +102,27 @@ export const getChannelProfileService = async (
               },
             },
           },
-          // Stage 8 - sort them by the latest first
+          // Stage 8 - Add channel field to every video
+          {
+            $addFields: {
+              channel: {
+                id: channel._id,
+                name: channel.name,
+              },
+            },
+          },
+          // Stage 9 - sort them by the latest first
           { $sort: { createdAt: -1 } },
-          // Stage 9 - limit videos by 12 per playlist
+          // Stage 10 - limit videos by 12 per playlist
           { $limit: 12 },
-          // Stage 10 - project videos for response
+          // Stage 11 - project videos for response
           {
             $project: {
               title: 1,
-              desription: 1,
               thumbnail: 1,
               duration: 1,
-              channel: 1,
               views: 1,
+              channel: 1,
               createdAt: 1,
             },
           },
@@ -93,7 +130,7 @@ export const getChannelProfileService = async (
         as: "videos",
       },
     },
-    // Stage 11 - project playlist for response
+    // Stage 12 - project playlist for response
     {
       $project: {
         title: 1,
@@ -108,11 +145,12 @@ export const getChannelProfileService = async (
       name: channel.name,
       handle: channel.handle,
       bio: channel.bio,
-      avatar: channel.avatar,
-      coverImage: channel.coverImage,
+      avatar: channel.avatar?.url ?? "",
+      coverImage: channel.coverImage?.url ?? "",
       subscribersCount: channel.subscriberCount,
     },
     isSubscribed,
     featuredPlaylist,
   };
 };
+// NOTE: This "??" operator is nuulish coalescing operator - which means, If the left side is null or undefined, use the right side
