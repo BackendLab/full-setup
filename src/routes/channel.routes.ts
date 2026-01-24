@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { verifyJwt } from "../middlewares/auth.middleware";
-import { getChannelProfile } from "../controllers/channel.controller";
+import {
+  getChannelProfile,
+  updateAvatar,
+} from "../controllers/channel.controller";
 import { validate } from "../middlewares/validation.middleware";
 import { channelParamSchema } from "../validations/channel.validation";
 import { checkChannelState } from "../middlewares/channelState.middleware";
@@ -16,4 +19,5 @@ router.get(
   getChannelProfile
 );
 
+router.patch("/channel/:channelId/avatar", verifyJwt, updateAvatar);
 export default router;
