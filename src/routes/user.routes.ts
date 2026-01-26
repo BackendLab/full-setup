@@ -4,7 +4,7 @@ import {
   changePassword,
   deleteUser,
   getCurrentUser,
-  updateAvatar,
+  // updateAvatar,
   updateCoverImage,
   updateUser,
 } from "../controllers/user.controller";

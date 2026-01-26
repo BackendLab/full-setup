@@ -1,7 +1,7 @@
 import {
   getCurrentUserService,
   updateUserService,
-  updateAvatarService,
+  // updateAvatarService,
   updateCoverImageService,
   changePasswordService,
   deleteUserService,
