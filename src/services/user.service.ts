@@ -71,41 +71,41 @@ export const updateUserService = async (
 };
 
 // Upload avatar Service
-export const updateAvatarService = async (userId: string, filePath: string) => {
-  try {
-    // get the user form userId
-    const user = await User.findById(userId);
-    // check if user exists or not
-    if (!user) {
-      throw new ApiError(401, "User does not exist");
-    }
-    // upload the file
-    const uploadedAvatar = await uploadToCloudinary(filePath);
+// export const updateAvatarService = async (userId: string, filePath: string) => {
+//   try {
+//     // get the user form userId
+//     const user = await User.findById(userId);
+//     // check if user exists or not
+//     if (!user) {
+//       throw new ApiError(401, "User does not exist");
+//     }
+//     // upload the file
+//     const uploadedAvatar = await uploadToCloudinary(filePath);
 
-    // check if file uploaded or not
-    if (!uploadedAvatar || !uploadedAvatar.url || !uploadedAvatar.public_id) {
-      throw new ApiError(500, "Avatar upload failed");
-    }
+//     // check if file uploaded or not
+//     if (!uploadedAvatar || !uploadedAvatar.url || !uploadedAvatar.public_id) {
+//       throw new ApiError(500, "Avatar upload failed");
+//     }
 
-    // check if there a file exists if yes then delete the previous file using public id
-    if (user.avatar?.publicId) {
-      await deleteFromCloudinary(user.avatar.publicId);
-    }
+//     // check if there a file exists if yes then delete the previous file using public id
+//     if (user.avatar?.publicId) {
+//       await deleteFromCloudinary(user.avatar.publicId);
+//     }
 
-    // update & save the user in DB
-    user.avatar = {
-      url: uploadedAvatar?.url,
-      publicId: uploadedAvatar?.public_id,
-    };
-    await user.save({ validateBeforeSave: false });
+//     // update & save the user in DB
+//     user.avatar = {
+//       url: uploadedAvatar?.url,
+//       publicId: uploadedAvatar?.public_id,
+//     };
+//     await user.save({ validateBeforeSave: false });
 
-    // return the upodatedAvatar method
-    return { url: uploadedAvatar?.url, publicId: uploadedAvatar?.public_id };
-  } catch (error) {
-    console.error("Update avatar service failed");
-    throw error;
-  }
-};
+//     // return the upodatedAvatar method
+//     return { url: uploadedAvatar?.url, publicId: uploadedAvatar?.public_id };
+//   } catch (error) {
+//     console.error("Update avatar service failed");
+//     throw error;
+//   }
+// };
 
 // Update Cover Image Service
 export const updateCoverImageService = async (

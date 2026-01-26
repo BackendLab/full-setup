@@ -3,6 +3,9 @@ import { Channel } from "../models/channel.model";
 import { ApiError } from "../utils/apiError";
 import { Subscription } from "../models/subscription.model";
 import { Playlist } from "../models/playlist.model";
+import { User } from "../models/user.model";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary";
+import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
 
 interface ChannelProfileResult {
   channel: {
@@ -153,4 +156,56 @@ export const getChannelProfileService = async (
     featuredPlaylist,
   };
 };
-// NOTE: This "??" operator is nuulish coalescing operator - which means, If the left side is null or undefined, use the right side
+// NOTE: This "??" operator is nullish coalescing operator - which means, If the left side is null or undefined, use the right side
+
+// Update Avatar Service
+export const updateAvatarService = async (
+  channelId: string,
+  userId: string,
+  filepath: string
+) => {
+  // find the channel, user using channelId and userId
+  const channel = await Channel.findById(channelId);
+  if (!channel) {
+    throw new ApiError(401, "Channel not found");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(401, "user not found");
+  }
+  // check the ownership of user with channel -> check channel.owner = user or not
+  if (channel?.owner.toString() !== userId) {
+    throw new ApiError(403, "Not allowed to update this channel");
+  }
+  // upload new avatar
+  const uploadedAvatar = await uploadToCloudinary(filepath);
+  // check if the avatar file uploaded or not
+  if (
+    !uploadedAvatar ||
+    !uploadedAvatar.secure_url ||
+    !uploadedAvatar.public_id
+  ) {
+    throw new ApiError(500, "Avatar uploaded failed");
+  }
+  // if uploading successfull delete the old avatar file
+  if (channel.avatar.publicId) {
+    await deleteFromCloudinary(channel.avatar.publicId);
+  }
+  // update the channel avatar and user avatar and save them to DB
+  const newAvatar = {
+    url: uploadedAvatar.secure_url,
+    publicId: uploadedAvatar.public_id,
+  };
+
+  channel.avatar = newAvatar;
+  user.avatar = newAvatar;
+
+  // save the updated avatar in DB at once
+  await Promise.all([
+    channel.save({ validateBeforeSave: false }),
+    user.save({ validateBeforeSave: false }),
+  ]);
+  // return the updated avatar
+  return { url: newAvatar.url, publicId: newAvatar.publicId };
+};

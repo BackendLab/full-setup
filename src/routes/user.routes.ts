@@ -22,13 +22,13 @@ const router = Router();
 // Secured Route
 router.get("/me", verifyJwt, getCurrentUser);
 router.patch("/profile", verifyJwt, validate(updateUserSchema), updateUser);
-router.patch(
-  "/avatar",
-  verifyJwt,
-  upload.single("avatar"),
-  validate(updateAvatarSchema),
-  updateAvatar
-);
+// router.patch(
+//   "/avatar",
+//   verifyJwt,
+//   upload.single("avatar"),
+//   validate(updateAvatarSchema),
+//   updateAvatar
+// );
 router.patch(
   "/cover-image",
   verifyJwt,
