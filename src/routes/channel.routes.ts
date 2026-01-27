@@ -19,5 +19,11 @@ router.get(
   getChannelProfile
 );
 
-router.patch("/channel/:channelId/avatar", verifyJwt, updateAvatar);
+router.patch(
+  "/channel/:channelId/avatar",
+  verifyJwt,
+  checkChannelState,
+  updateAvatar
+);
+
 export default router;
