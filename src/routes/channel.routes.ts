@@ -5,7 +5,10 @@ import {
   updateAvatar,
 } from "../controllers/channel.controller";
 import { validate } from "../middlewares/validation.middleware";
-import { channelParamSchema } from "../validations/channel.validation";
+import {
+  channelAvatarSchema,
+  channelParamSchema,
+} from "../validations/channel.validation";
 import { checkChannelState } from "../middlewares/channelState.middleware";
 
 const router = Router();
@@ -22,6 +25,7 @@ router.get(
 router.patch(
   "/channel/:channelId/avatar",
   verifyJwt,
+  validate(channelAvatarSchema),
   checkChannelState,
   updateAvatar
 );
