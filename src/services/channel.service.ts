@@ -7,6 +7,12 @@ import { User } from "../models/user.model";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
 
+// interface for update channel info
+interface UpdateChannelInfoPayload {
+  name: string;
+  handle: string;
+  bio: string;
+}
 interface ChannelProfileResult {
   channel: {
     id: string;
@@ -157,6 +163,42 @@ export const getChannelProfileService = async (
   };
 };
 // NOTE: This "??" operator is nullish coalescing operator - which means, If the left side is null or undefined, use the right side
+
+// Updatre Channel Info Service
+export const updateChannelInfoService = async (
+  channelId: string,
+  userId: string,
+  { name, handle, bio }: UpdateChannelInfoPayload
+) => {
+  // find the channel with ownership enforcement
+  const channel = await Channel.findOne({ _id: channelId, owner: userId });
+  // check if the channel exist or not
+  if (!channel) {
+    throw new ApiError(404, "Channel not found!");
+  }
+  // check if the handle is unique or not
+  if (handle && handle !== channel.handle) {
+    const handleExists = await Channel.exists({ handle });
+    // check if the handle exists or not, if yes then throw error
+    if (handleExists) {
+      throw new ApiError(409, "Handle is already taken");
+    }
+  }
+  // update the channel info
+  if (name !== undefined) {
+    channel.name = name;
+  }
+  if (handle !== undefined) {
+    channel.handle = handle;
+  }
+  if (bio !== undefined) {
+    channel.bio = bio;
+  }
+  // save updated info in DB
+  await channel.save({ validateBeforeSave: false });
+  // return updated fields
+  return { name: channel.name, handle: channel.handle, bio: channel.bio };
+};
 
 // Update Avatar Service
 export const updateAvatarService = async (
