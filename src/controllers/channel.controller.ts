@@ -4,6 +4,7 @@ import { ApiError } from "../utils/apiError";
 import {
   getChannelProfileService,
   updateAvatarService,
+  updateChannelInfoService,
 } from "../services/channel.service";
 import { ApiResponse } from "../utils/apiResponse";
 
@@ -29,6 +30,40 @@ export const getChannelProfile = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(200, "Channel fetched successfully", channelData));
+  }
+);
+
+// Update Channel Basic Info
+export const updateChannelInfo = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the the channel Id and user Id from poram and req.user
+    const { channleId } = req.params;
+    // chheck if the channel exists or not
+    if (!channleId) {
+      throw new ApiError(400, "Channel ID is required");
+    }
+    const userId = req.user?._id;
+    if (!userId) {
+      throw new ApiError(401, "");
+    }
+    // get the info - name, handle, bio from req.body
+    const { name, handle, bio } = req.body;
+    // call the service
+    const updatedChannel = await updateChannelInfoService(
+      channleId,
+      userId.toString(),
+      {
+        name,
+        handle,
+        bio,
+      }
+    );
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Channel updated Successfully", updatedChannel)
+      );
   }
 );
 
