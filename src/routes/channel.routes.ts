@@ -9,6 +9,7 @@ import { validate } from "../middlewares/validation.middleware";
 import {
   channelAvatarSchema,
   channelParamSchema,
+  updateChannelInfoSchema,
 } from "../validations/channel.validation";
 import { checkChannelState } from "../middlewares/channelState.middleware";
 
@@ -33,5 +34,11 @@ router.patch(
 );
 
 // This endpont is for updating the channel info
-router.patch("/channel/:channelId", verifyJwt, updateChannelInfo);
+router.patch(
+  "/channel/:channelId",
+  verifyJwt,
+  validate(updateChannelInfoSchema),
+  updateChannelInfo
+);
+
 export default router;
