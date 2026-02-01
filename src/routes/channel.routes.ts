@@ -9,6 +9,7 @@ import {
 import { validate } from "../middlewares/validation.middleware";
 import {
   channelAvatarSchema,
+  channelCoverImageSchema,
   channelParamSchema,
   updateChannelInfoSchema,
 } from "../validations/channel.validation";
@@ -42,6 +43,11 @@ router.patch(
   updateAvatar
 );
 
-router.patch("/channel/:channelId/cover-image", verifyJwt, updateCoverImage);
+router.patch(
+  "/channel/:channelId/cover-image",
+  verifyJwt,
+  validate(channelCoverImageSchema),
+  updateCoverImage
+);
 
 export default router;

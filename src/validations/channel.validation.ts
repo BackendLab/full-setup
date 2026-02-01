@@ -32,3 +32,12 @@ export const channelAvatarSchema = z.object({
     path: z.string(),
   }),
 });
+
+export const channelCoverImageSchema = z.object({
+  params: z.object({
+    channelId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ChannelId"),
+  }),
+  file: z.object({
+    path: z.string(),
+  }),
+});
