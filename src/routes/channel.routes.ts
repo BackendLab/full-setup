@@ -4,6 +4,7 @@ import {
   getChannelProfile,
   updateAvatar,
   updateChannelInfo,
+  updateCoverImage,
 } from "../controllers/channel.controller";
 import { validate } from "../middlewares/validation.middleware";
 import {
@@ -16,13 +17,21 @@ import { checkChannelState } from "../middlewares/channelState.middleware";
 const router = Router();
 
 // Channel Routes
-// This en;dpoint is for getting the info of a specific channel
+// This endpoint is for getting the info of a specific channel
 router.get(
   "/channel/:channelId",
   verifyJwt,
   checkChannelState,
   validate(channelParamSchema),
   getChannelProfile
+);
+
+// This endpont is for updating the channel info
+router.patch(
+  "/channel/:channelId",
+  verifyJwt,
+  validate(updateChannelInfoSchema),
+  updateChannelInfo
 );
 
 router.patch(
@@ -33,12 +42,6 @@ router.patch(
   updateAvatar
 );
 
-// This endpont is for updating the channel info
-router.patch(
-  "/channel/:channelId",
-  verifyJwt,
-  validate(updateChannelInfoSchema),
-  updateChannelInfo
-);
+router.patch("/channel/:channelId/cover-image", verifyJwt, updateCoverImage);
 
 export default router;

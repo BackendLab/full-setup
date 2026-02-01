@@ -5,6 +5,7 @@ import {
   getChannelProfileService,
   updateAvatarService,
   updateChannelInfoService,
+  updateCoverImageService,
 } from "../services/channel.service";
 import { ApiResponse } from "../utils/apiResponse";
 
@@ -101,6 +102,46 @@ export const updateAvatar = asyncHandler(
           200,
           "Channel & User avatar is updated successfully",
           updatedAvatar
+        )
+      );
+  }
+);
+
+// Update Channel Cover Image
+export const updateCoverImage = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the channel and user id
+    const { channelId } = req.params;
+    // check if the channel and user exists or not
+    if (!channelId) {
+      throw new ApiError(400, "Channel ID is required");
+    }
+
+    const userId = req.user?._id;
+
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized request");
+    }
+    // get the file from body
+    const filepath = req.file?.path;
+    // check if the file exists or not
+    if (!filepath) {
+      throw new ApiError(400, "Avatar file is missing");
+    }
+    // call the service
+    const updatedCoverImage = await updateCoverImageService(
+      channelId,
+      userId.toString(),
+      filepath
+    );
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Channel cover image updated successfully",
+          updatedCoverImage
         )
       );
   }
