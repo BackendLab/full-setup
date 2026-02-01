@@ -251,3 +251,51 @@ export const updateAvatarService = async (
   // return the updated avatar
   return { url: newAvatar.url, publicId: newAvatar.publicId };
 };
+
+// Update Cover Image Service
+export const updateCoverImageService = async (
+  channelId: string,
+  userId: string,
+  filepath: string
+) => {
+  // get the channel id find the channel and user
+  const channel = await Channel.findById(channelId);
+  // check if the channel exists or not
+  if (!channel) {
+    throw new ApiError(401, "Channel not found");
+  }
+
+  // check if the current user is owner of the channel or not
+  if (channel?.owner.toString() !== userId) {
+    throw new ApiError(403, "Not allowed to change this channel");
+  }
+
+  // get the old cover image public id for deletion
+  const oldCoverImage = channel?.coverImage.publicId;
+
+  // upload the new cover image
+  const uploadCoverImage = await uploadToCloudinary(filepath);
+  // check if the cover image is uploaded or not
+  if (
+    !uploadCoverImage ||
+    !uploadCoverImage.secure_url ||
+    !uploadCoverImage.public_id
+  ) {
+    throw new ApiError(500, "Cover Image not uploaded");
+  }
+  // save the updated cover image credentials to the DB
+  channel.coverImage = {
+    url: uploadCoverImage.secure_url,
+    publicId: uploadCoverImage.public_id,
+  };
+  await channel.save({ validateBeforeSave: false });
+  // after saving, delete the old cover image
+  if (oldCoverImage) {
+    await deleteFromCloudinary(oldCoverImage);
+  }
+  // return the new credentials
+  return {
+    url: uploadCoverImage.secure_url,
+    publicid: uploadCoverImage.public_id,
+  };
+};
