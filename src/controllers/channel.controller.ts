@@ -3,7 +3,6 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import {
   getChannelInfoService,
-  getChannelProfileService,
   updateAvatarService,
   updateChannelInfoService,
   updateCoverImageService,

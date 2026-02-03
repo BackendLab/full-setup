@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJwt } from "../middlewares/auth.middleware";
 import {
-  getChannelProfile,
+  getChannelInfo,
   updateAvatar,
   updateChannelInfo,
   updateCoverImage,
@@ -24,7 +24,7 @@ router.get(
   verifyJwt,
   checkChannelState,
   validate(channelParamSchema),
-  getChannelProfile
+  getChannelInfo
 );
 
 // This endpont is for updating the channel info
