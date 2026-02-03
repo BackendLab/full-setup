@@ -2,35 +2,63 @@ import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import {
+  getChannelInfoService,
   getChannelProfileService,
   updateAvatarService,
   updateChannelInfoService,
   updateCoverImageService,
 } from "../services/channel.service";
 import { ApiResponse } from "../utils/apiResponse";
+import { string } from "zod";
 
-export const getChannelProfile = asyncHandler(
+// export const getChannelProfile = asyncHandler(
+//   async (req: Request, res: Response) => {
+//     // get the channel id and viewer id from request
+//     const viewerId = req.user?._id;
+//     // check if  viewer  exist or not
+//     if (!viewerId) {
+//       throw new ApiError(401, "Unauthorized request");
+//     }
+//     const { channelId } = req.params;
+//     // check if channelId exists or not
+//     if (!channelId) {
+//       throw new ApiError(400, "Channel ID is required");
+//     }
+//     // call the service
+//     const channelData = await getChannelProfileService(
+//       viewerId.toString(),
+//       channelId
+//     );
+//     // give back the response to the client
+//     res
+//       .status(200)
+//       .json(new ApiResponse(200, "Channel fetched successfully", channelData));
+//   }
+// );
+
+export const getChannelInfo = asyncHandler(
   async (req: Request, res: Response) => {
-    // get the channel id and viewer id from request
-    const viewerId = req.user?._id;
-    // check if  viewer  exist or not
-    if (!viewerId) {
-      throw new ApiError(401, "Unauthorized request");
-    }
+    // get the channel id
     const { channelId } = req.params;
-    // check if channelId exists or not
+    // check if the channel Id exists or not
     if (!channelId) {
       throw new ApiError(400, "Channel ID is required");
     }
+    // get the viewer id
+    const viewerId = req.user?._id;
+    // check if the viewer exists or not
+    if (!viewerId) {
+      throw new ApiError(401, "Unauthorized request");
+    }
     // call the service
-    const channelData = await getChannelProfileService(
-      viewerId.toString(),
-      channelId
+    const channelInfo = await getChannelInfoService(
+      channelId,
+      viewerId.toString()
     );
-    // give back the response to the client
+    // give back the resposne to the client
     res
       .status(200)
-      .json(new ApiResponse(200, "Channel fetched successfully", channelData));
+      .json(new ApiResponse(200, "Channel Info Fetched", channelInfo));
   }
 );
 
@@ -45,7 +73,7 @@ export const updateChannelInfo = asyncHandler(
     }
     const userId = req.user?._id;
     if (!userId) {
-      throw new ApiError(401, "");
+      throw new ApiError(401, "Unautjorized request");
     }
     // get the info - name, handle, bio from req.body
     const { name, handle, bio } = req.body;
