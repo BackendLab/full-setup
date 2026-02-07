@@ -27,6 +27,13 @@ router.get(
   getChannelInfo
 );
 
+router.get(
+  "/channel/:channelId/featured",
+  verifyJwt,
+  checkChannelState,
+  validate(channelParamSchema)
+);
+
 // This endpont is for updating the channel info
 router.patch(
   "/channel/:channelId",

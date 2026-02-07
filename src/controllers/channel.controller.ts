@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import {
   getChannelInfoService,
+  getFeaturedContentService,
   updateAvatarService,
   updateChannelInfoService,
   updateCoverImageService,
@@ -58,6 +59,21 @@ export const getChannelInfo = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(200, "Channel Info Fetched", channelInfo));
+  }
+);
+
+// Get Channel Featured Content
+export const getFeaturedContent = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the channel Id from params
+    const { channelId } = req.params;
+    // check if the channel Id exists or not
+    if (!channelId) {
+      throw new ApiError(401, "Channel ID is required");
+    }
+    // call the service
+    const featuredContent = await getFeaturedContentService(channelId);
+    // give back the response to the client
   }
 );
 
