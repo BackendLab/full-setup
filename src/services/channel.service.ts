@@ -25,6 +25,25 @@ interface ChannelProfileResult {
   };
   isSubscribed: boolean;
 }
+interface FeaturedPlaylistResult {
+  featuredPlaylist: Array<{
+    _id: string;
+    title: string;
+    videos: Array<{
+      _id: string;
+      title: string;
+      desription: string;
+      thumbnail: string;
+      duration: number;
+      channel: {
+        _id: string;
+        name: string;
+      };
+      views: number;
+      createdAt: Date;
+    }>;
+  }>;
+}
 
 // export const getChannelProfileService = async (
 //   viewerId: string,
@@ -151,7 +170,7 @@ export const getChannelInfoService = async (
   // get the channel Id and viewerId
   channelId: string,
   viewerId: string
-) => {
+): Promise<ChannelProfileResult> => {
   // find the channel with channel id and status must be active
   const channel = await Channel.findOne({
     _id: channelId,
@@ -185,6 +204,96 @@ export const getChannelInfoService = async (
     },
     isSubscribed,
   };
+};
+
+// Featured Content Service
+export const getFeaturedContentService = async (channelId: string) => {
+  // get the channel Id and convert it into Object Id
+  const channelObjectId = new Types.ObjectId(channelId);
+  // find the channel
+  const channel = await Channel.findOne({
+    _id: channelObjectId,
+    status: "ACTIVE",
+  });
+  // check if the channel exists or not
+  if (!channel) {
+    throw new ApiError(404, "Channel not found");
+  }
+  // get the palyslist using aggregation pipeline
+  const featuredPlaylist = await Playlist.aggregate([
+    // stage 1 - get the playlist of this channel only
+    {
+      $match: {
+        channel: channelObjectId,
+        status: "ACTIVE",
+      },
+    },
+    {
+      // stage 2 - get and sort the latest playlists
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    // stage 3 - limit the playlists to 5
+    { $limit: 5 },
+    // stage 4 - get the videos of all the playlists
+    {
+      $lookup: {
+        from: "videos",
+        let: { plsylistId: "$_id" },
+        // create a subpipline
+        pipeline: [
+          {
+            // stage 5 - get the videos of that single playlist, where visibility and status are Public and Active
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$playlistId", "$playlistId"] },
+                  { $eq: ["$visibility", "PUBLIC"] },
+                  { $eq: ["status", "ACTIVE"] },
+                ],
+              },
+            },
+          },
+          {
+            // stage 6 - add channel anme to evry video
+            $addFields: {
+              name: channel.name,
+            },
+          },
+          // stage 7 - sort video to the newest first
+          {
+            $sort: { createdAt: -1 },
+          },
+          // stage 8 - limit the videos to 12 per playlist
+          {
+            $limit: 12,
+          },
+          // stage 9 - project the videos for response
+          {
+            $project: {
+              title: 1,
+              thumbnail: 1,
+              duration: 1,
+              views: 1,
+              channel: 1,
+              cretaedAt: 1,
+            },
+          },
+        ],
+        as: "videos",
+      },
+    },
+    // stage 10 - project the plylist for response
+    {
+      $project: {
+        title: 1,
+        videos: 1,
+      },
+    },
+  ]);
+  // return featured playlist
+  return featuredPlaylist;
 };
 
 // Updatre Channel Info Service
