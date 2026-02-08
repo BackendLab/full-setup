@@ -27,7 +27,7 @@ interface ChannelProfileResult {
 }
 interface FeaturedPlaylistResult {
   featuredPlaylist: Array<{
-    _id: string;
+    id: string;
     title: string;
     videos: Array<{
       _id: string;
@@ -183,7 +183,7 @@ export const getChannelInfoService = async (
   // check if the viewer subscribed this channel or not
   let isSubscribed = false;
 
-  if (!viewerId) {
+  if (viewerId) {
     const subscriptionExists = !!(await Subscription.exists({
       channel: channelId,
       subscriber: viewerId,
@@ -207,14 +207,16 @@ export const getChannelInfoService = async (
 };
 
 // Featured Content Service
-export const getFeaturedContentService = async (channelId: string) => {
+export const getFeaturedContentService = async (
+  channelId: string
+): Promise<FeaturedPlaylistResult> => {
   // get the channel Id and convert it into Object Id
   const channelObjectId = new Types.ObjectId(channelId);
   // find the channel
   const channel = await Channel.findOne({
     _id: channelObjectId,
     status: "ACTIVE",
-  });
+  }).select("name");
   // check if the channel exists or not
   if (!channel) {
     throw new ApiError(404, "Channel not found");
@@ -240,7 +242,7 @@ export const getFeaturedContentService = async (channelId: string) => {
     {
       $lookup: {
         from: "videos",
-        let: { plsylistId: "$_id" },
+        let: { playlist: "$_id" },
         // create a subpipline
         pipeline: [
           {
@@ -248,7 +250,7 @@ export const getFeaturedContentService = async (channelId: string) => {
             $match: {
               $expr: {
                 $and: [
-                  { $eq: ["$playlistId", "$playlistId"] },
+                  { $eq: ["$playlist", "$playlistId"] },
                   { $eq: ["$visibility", "PUBLIC"] },
                   { $eq: ["status", "ACTIVE"] },
                 ],
@@ -258,7 +260,10 @@ export const getFeaturedContentService = async (channelId: string) => {
           {
             // stage 6 - add channel anme to evry video
             $addFields: {
-              name: channel.name,
+              channel: {
+                id: channel._id,
+                name: channel.name,
+              },
             },
           },
           // stage 7 - sort video to the newest first
@@ -293,7 +298,9 @@ export const getFeaturedContentService = async (channelId: string) => {
     },
   ]);
   // return featured playlist
-  return featuredPlaylist;
+  return {
+    featuredPlaylist,
+  };
 };
 
 // Updatre Channel Info Service
