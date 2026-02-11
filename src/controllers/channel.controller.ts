@@ -74,6 +74,15 @@ export const getFeaturedContent = asyncHandler(
     // call the service
     const featuredContent = await getFeaturedContentService(channelId);
     // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "featured Content fetrched successfully",
+          featuredContent
+        )
+      );
   }
 );
 
