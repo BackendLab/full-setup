@@ -4,6 +4,7 @@ import { ApiError } from "../utils/apiError";
 import {
   getChannelInfoService,
   getFeaturedContentService,
+  getVideosService,
   updateAvatarService,
   updateChannelInfoService,
   updateCoverImageService,
@@ -86,6 +87,21 @@ export const getFeaturedContent = asyncHandler(
   }
 );
 
+// Get al lthe channel videos
+export const getVideos = asyncHandler(async (req: Request, res: Response) => {
+  // get the channel Id from param
+  const { channelId } = req.params;
+  // check if the channel Id exists or not
+  if (!channelId) {
+    throw new ApiError(401, "Channel ID is required");
+  }
+  // get the page and limit from query param
+  const { page, limit } = req.query;
+  // call the service
+  const videos = await getVideosService(channelId, Number(page), Number(limit));
+  // give back the response back to the client
+});
+
 // Update Channel Basic Info
 export const updateChannelInfo = asyncHandler(
   async (req: Request, res: Response) => {
@@ -97,7 +113,7 @@ export const updateChannelInfo = asyncHandler(
     }
     const userId = req.user?._id;
     if (!userId) {
-      throw new ApiError(401, "Unautjorized request");
+      throw new ApiError(401, "Unautorized request");
     }
     // get the info - name, handle, bio from req.body
     const { name, handle, bio } = req.body;

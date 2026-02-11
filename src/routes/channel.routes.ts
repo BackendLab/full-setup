@@ -3,6 +3,7 @@ import { verifyJwt } from "../middlewares/auth.middleware";
 import {
   getChannelInfo,
   getFeaturedContent,
+  getVideos,
   updateAvatar,
   updateChannelInfo,
   updateCoverImage,
@@ -36,10 +37,18 @@ router.get(
   getFeaturedContent
 );
 
+router.get(
+  "/channel/:channelId/videos",
+  verifyJwt,
+  checkChannelState,
+  getVideos
+);
+
 // This endpont is for updating the channel info
 router.patch(
   "/channel/:channelId",
   verifyJwt,
+  checkChannelState,
   validate(updateChannelInfoSchema),
   updateChannelInfo
 );
@@ -55,6 +64,7 @@ router.patch(
 router.patch(
   "/channel/:channelId/cover-image",
   verifyJwt,
+  checkChannelState,
   validate(channelCoverImageSchema),
   updateCoverImage
 );
