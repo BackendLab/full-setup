@@ -8,6 +8,14 @@ export const channelParamSchema = z.object({
   }),
 });
 
+// Get All the videos of Channel Schema
+export const channelVideoSchema = z.object({
+  query: z.object({
+    page: z.string().default("1").transform(Number),
+    limit: z.string().default("12").transform(Number),
+  }),
+});
+
 // Channel State Schema
 export const channelStateSchema = z.object({
   state: z.enum(ChannelState),
@@ -33,6 +41,7 @@ export const channelAvatarSchema = z.object({
   }),
 });
 
+// Channel Cover Image Schema
 export const channelCoverImageSchema = z.object({
   params: z.object({
     channelId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ChannelId"),

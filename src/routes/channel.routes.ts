@@ -13,6 +13,7 @@ import {
   channelAvatarSchema,
   channelCoverImageSchema,
   channelParamSchema,
+  channelVideoSchema,
   updateChannelInfoSchema,
 } from "../validations/channel.validation";
 import { checkChannelState } from "../middlewares/channelState.middleware";
@@ -41,6 +42,8 @@ router.get(
   "/channel/:channelId/videos",
   verifyJwt,
   checkChannelState,
+  validate(channelParamSchema),
+  validate(channelVideoSchema),
   getVideos
 );
 

@@ -10,7 +10,6 @@ import {
   updateCoverImageService,
 } from "../services/channel.service";
 import { ApiResponse } from "../utils/apiResponse";
-import { string } from "zod";
 
 // export const getChannelProfile = asyncHandler(
 //   async (req: Request, res: Response) => {
