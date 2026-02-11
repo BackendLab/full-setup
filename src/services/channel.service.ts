@@ -6,6 +6,7 @@ import { Playlist } from "../models/playlist.model";
 import { User } from "../models/user.model";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
+import { Video } from "../models/video.model";
 
 // interface for update channel info
 interface UpdateChannelInfoPayload {
@@ -300,6 +301,56 @@ export const getFeaturedContentService = async (
   // return featured playlist
   return {
     featuredPlaylist,
+  };
+};
+
+// Get all the videos Service
+export const getVideosService = async (
+  channelId: string,
+  page: number,
+  limit: number
+) => {
+  // get the channel id and find the channel
+  const channel = await Channel.findOne({ _id: channelId, status: "ACTIVE" });
+  // check if the channel exists or not
+  if (!channel) {
+    throw new ApiError(404, "Channel Not Found");
+  }
+  // Calculate offset pagination
+  const skip = (page - 1) * limit;
+  // NOTE: understanding this formula with a example - let's say - page = 2 and limit = 12
+  // so the formula is (2 - 1) * 12 = 12, So skip 12 videos and show next 12 videos
+
+  // fetch videos
+  const videos = await Video.find({
+    channel: channelId,
+    visibility: "PUBLIC",
+    status: "ACTIVE",
+  })
+    .sort({ createdAt: -1, _id: -1 })
+    .skip(skip)
+    .limit(limit)
+    .select("title thumbnail duration views createdAt");
+  // Calculate total number of videos
+  const totalVideos = await Video.countDocuments({
+    channel: channelId,
+    visibility: "PUBLIC",
+    status: "ACTIVE",
+  });
+
+  // Calculate total pages
+  const totalPages = Math.ceil(totalVideos / limit);
+
+  // return the videos including pagination
+  return {
+    videos,
+    pagination: {
+      page,
+      limit,
+      totalVideos,
+      totalPages,
+      hasNextPage: page < totalPages,
+    },
   };
 };
 
