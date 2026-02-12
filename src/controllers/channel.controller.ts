@@ -4,6 +4,7 @@ import { ApiError } from "../utils/apiError";
 import {
   getChannelInfoService,
   getFeaturedContentService,
+  getPlaylistsService,
   getVideosService,
   updateAvatarService,
   updateChannelInfoService,
@@ -86,7 +87,7 @@ export const getFeaturedContent = asyncHandler(
   }
 );
 
-// Get al lthe channel videos
+// Get all the channel videos
 export const getVideos = asyncHandler(async (req: Request, res: Response) => {
   // get the channel Id from param
   const { channelId } = req.params;
@@ -99,6 +100,7 @@ export const getVideos = asyncHandler(async (req: Request, res: Response) => {
   // call the service
   const videos = await getVideosService(channelId, Number(page), Number(limit));
   // give back the response back to the client
+  res.status(200).json(new ApiResponse(200, "Fetched All Videos", videos));
 });
 
 // Update Channel Basic Info
