@@ -103,6 +103,38 @@ export const getVideos = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(new ApiResponse(200, "Fetched All Videos", videos));
 });
 
+// Get all the channel Palylists
+export const getPlaylists = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the channel id and viewer id
+    const { channelId } = req.params;
+    const viewerId = req.user?._id;
+    // check if both id's exists or not
+    if (!channelId) {
+      throw new ApiError(401, "Channel ID is required");
+    }
+
+    if (!viewerId) {
+      throw new ApiError(400, "Unauthorized request");
+    }
+    // get the page and limit query params
+    const { page, limit } = req.query;
+    // call the service
+    const playlists = await getPlaylistsService(
+      channelId,
+      viewerId.toString(),
+      Number(page),
+      Number(limit)
+    );
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "All Playlists fetched successfully", playlists)
+      );
+  }
+);
+
 // Update Channel Basic Info
 export const updateChannelInfo = asyncHandler(
   async (req: Request, res: Response) => {

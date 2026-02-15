@@ -3,6 +3,7 @@ import { verifyJwt } from "../middlewares/auth.middleware";
 import {
   getChannelInfo,
   getFeaturedContent,
+  getPlaylists,
   getVideos,
   updateAvatar,
   updateChannelInfo,
@@ -45,6 +46,14 @@ router.get(
   validate(channelParamSchema),
   validate(channelVideoSchema),
   getVideos
+);
+
+router.get(
+  "/channel/:channelId/playlists",
+  verifyJwt,
+  checkChannelState,
+  validate(channelParamSchema),
+  getPlaylists
 );
 
 // This endpont is for updating the channel info
