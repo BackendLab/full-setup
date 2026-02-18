@@ -122,7 +122,6 @@ export const getPlaylists = asyncHandler(
     // call the service
     const playlists = await getPlaylistsService(
       channelId,
-      viewerId.toString(),
       Number(page),
       Number(limit)
     );
