@@ -334,7 +334,7 @@ export const getVideosService = async (
       .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
-      .select("title, thumbnail duration views cratedAt"),
+      .select("title, thumbnail duration views createdAt"),
 
     // Calculate Total Videos
     Video.countDocuments(filter),
@@ -350,6 +350,57 @@ export const getVideosService = async (
       page,
       limit,
       totalVideos,
+      totalPages,
+      hasNextPage: page < totalPages,
+    },
+  };
+};
+
+// Get Channel Playlists
+export const getPlaylistsService = async (
+  channelId: string,
+  page: number,
+  limit: number
+) => {
+  // get the channel id and viewer id and find the channel
+  const channel = Channel.findOne({
+    _id: channelId,
+    status: "ACTIVE",
+  });
+  // check if channel exists or not
+  if (!channel) {
+    throw new ApiError(404, "Channel Not Found!");
+  }
+  // Calculate offset pagination
+  const skip = (page - 1) * limit;
+
+  // creatinf filter for finding playlists
+  const filter = {
+    channel: channelId,
+    visibility: "PUBLIC",
+    status: "ACTIVE",
+  };
+
+  // Get all the playlists with visibility and status using Promise.all
+  const [playlists, totalPlaylists] = await Promise.all([
+    Playlist.find(filter)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select("title thumbnail videos, createdAt"),
+
+    Playlist.countDocuments(filter),
+  ]);
+
+  // Calculate Total Pages
+  const totalPages = Math.ceil(totalPlaylists / limit);
+  // return the playlists with pagination
+  return {
+    playlists,
+    pagination: {
+      page,
+      limit,
+      totalPlaylists,
       totalPages,
       hasNextPage: page < totalPages,
     },
