@@ -318,25 +318,27 @@ export const getVideosService = async (
   }
   // Calculate offset pagination
   const skip = (page - 1) * limit;
-  // NOTE: understanding this formula with a example - let's say - page = 2 and limit = 12
+  // NOTE: understanding this formula with an example - let's say - page = 2 and limit = 12
   // so the formula is (2 - 1) * 12 = 12, So skip 12 videos and show next 12 videos
 
-  // fetch videos
-  const videos = await Video.find({
+  // creating filter for finding videos
+  const filter = {
     channel: channelId,
     visibility: "PUBLIC",
     status: "ACTIVE",
-  })
-    .sort({ createdAt: -1, _id: -1 })
-    .skip(skip)
-    .limit(limit)
-    .select("title thumbnail duration views createdAt");
-  // Calculate total number of videos
-  const totalVideos = await Video.countDocuments({
-    channel: channelId,
-    visibility: "PUBLIC",
-    status: "ACTIVE",
-  });
+  };
+
+  // fetch videos using Promise.all
+  const [videos, totalVideos] = await Promise.all([
+    Video.find(filter)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select("title, thumbnail duration views cratedAt"),
+
+    // Calculate Total Videos
+    Video.countDocuments(filter),
+  ]);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalVideos / limit);
