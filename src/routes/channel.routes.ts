@@ -24,7 +24,7 @@ const router = Router();
 // Channel Routes
 // This endpoint is for getting the info of a specific channel
 router.get(
-  "/channel/:channelId",
+  "/:channelId",
   verifyJwt,
   checkChannelState,
   validate(channelParamSchema),
@@ -32,7 +32,7 @@ router.get(
 );
 
 router.get(
-  "/channel/:channelId/featured",
+  "/:channelId/featured",
   verifyJwt,
   checkChannelState,
   validate(channelParamSchema),
@@ -40,7 +40,7 @@ router.get(
 );
 
 router.get(
-  "/channel/:channelId/videos",
+  "/:channelId/videos",
   verifyJwt,
   checkChannelState,
   validate(channelParamSchema),
@@ -49,7 +49,7 @@ router.get(
 );
 
 router.get(
-  "/channel/:channelId/playlists",
+  "/:channelId/playlists",
   verifyJwt,
   checkChannelState,
   validate(channelParamSchema),
@@ -58,7 +58,7 @@ router.get(
 
 // This endpont is for updating the channel info
 router.patch(
-  "/channel/:channelId",
+  "/:channelId",
   verifyJwt,
   checkChannelState,
   validate(updateChannelInfoSchema),
@@ -66,7 +66,7 @@ router.patch(
 );
 
 router.patch(
-  "/channel/:channelId/avatar",
+  "/:channelId/avatar",
   verifyJwt,
   validate(channelAvatarSchema),
   checkChannelState,
@@ -74,7 +74,7 @@ router.patch(
 );
 
 router.patch(
-  "/channel/:channelId/cover-image",
+  "/:channelId/cover-image",
   verifyJwt,
   checkChannelState,
   validate(channelCoverImageSchema),
