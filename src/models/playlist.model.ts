@@ -24,6 +24,7 @@ const playlistSchema = new mongoose.Schema(
       required: true,
       maxLength: 120,
     },
+
     description: {
       type: String,
       maxLength: 500,

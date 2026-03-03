@@ -16,6 +16,14 @@ export const channelVideoSchema = z.object({
   }),
 });
 
+// Get all the playlists of Channel Schema
+export const channelPlaylistSchema = z.object({
+  query: z.object({
+    page: z.string().default("1").transform(Number),
+    limit: z.string().default("10").transform(Number),
+  }),
+});
+
 // Channel State Schema
 export const channelStateSchema = z.object({
   state: z.enum(ChannelState),
