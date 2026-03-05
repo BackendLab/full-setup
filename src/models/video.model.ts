@@ -10,7 +10,7 @@ export enum VideoVisibility {
 
 // interface must extends Document only when we need mongoose inbuild methods otherwise, No need of that
 export interface IVideo extends Document {
-  videofile: string;
+  videoFile: string;
   title: string;
   description: string;
   thumbnail: string; // cloudinary url
@@ -23,7 +23,7 @@ export interface IVideo extends Document {
   channel: mongoose.Types.ObjectId;
   playlist?: mongoose.Types.ObjectId;
   visibility: VideoVisibility;
-  state: VideoState;
+  status: VideoState;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,7 +63,7 @@ const videoSchema = new mongoose.Schema(
         type: String,
       },
     ],
-    view: {
+    views: {
       type: Number,
       default: 0,
     },
@@ -89,20 +89,23 @@ const videoSchema = new mongoose.Schema(
       enum: Object.values(VideoVisibility),
       default: VideoVisibility.PUBLIC,
     },
-    state: {
+    status: {
       type: String,
       enum: Object.values(VideoState),
-      default: VideoState.ACTIVE,
+      default: VideoState.PROCESSING,
     },
   },
   { timestamps: true }
 );
 
 // Indexes
-videoSchema.index({ channel: 1, unique: 1 });
-videoSchema.index({ playlist: 1, unique: 1 });
-videoSchema.index({ visibility: 1, unique: 1 });
-videoSchema.index({ state: 1, unique: 1 });
+videoSchema.index({
+  channel: 1,
+  visibility: 1,
+  status: 1,
+  createdAt: -1,
+  _id: -1,
+});
 
 // Added a plugin of mongoose aggregate paginate version 2 for pagination
 videoSchema.plugin(mongooseAggregatePaginate);

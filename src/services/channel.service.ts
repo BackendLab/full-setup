@@ -334,7 +334,7 @@ export const getVideosService = async (
       .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
-      .select("title, thumbnail duration views createdAt"),
+      .select("title thumbnail duration views createdAt"),
 
     // Calculate Total Videos
     Video.countDocuments(filter),

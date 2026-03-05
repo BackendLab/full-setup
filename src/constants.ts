@@ -15,9 +15,9 @@ export enum ChannelState {
 
 // Video Status
 export enum VideoState {
-  ACTIVE = "ACTIVE",
-  SUSPENDED = "SUSPENDED",
-  DELETED = "DELETED",
+  PROCESSING = "PROCESSING",
+  READY = "READY",
+  FAILED = "FAILED",
 }
 
 // Playlist Status
