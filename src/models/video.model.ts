@@ -80,10 +80,12 @@ const videoSchema = new mongoose.Schema(
       ref: "Channel",
       required: true,
     },
-    playlist: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Playlist",
-    },
+    playlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Playlist",
+      },
+    ],
     visibility: {
       type: String,
       enum: Object.values(VideoVisibility),
