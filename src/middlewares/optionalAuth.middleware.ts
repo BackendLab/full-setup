@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model";
 
-export const OptionalAuth = asyncHandler(
+export const optionalAuth = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     // get token from cokkies
     const token = req.cookies?.accessToken;
