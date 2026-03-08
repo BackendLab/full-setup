@@ -8,12 +8,17 @@ export enum VideoVisibility {
   UNLISTED = "UNLISTED",
 }
 
+interface CloudinaryFiles {
+  url?: string;
+  publicId?: string;
+}
+
 // interface must extends Document only when we need mongoose inbuild methods otherwise, No need of that
 export interface IVideo extends Document {
-  videoFile: string;
+  videoFile: CloudinaryFiles;
   title: string;
   description: string;
-  thumbnail: string; // cloudinary url
+  thumbnail: CloudinaryFiles; // cloudinary url
   duration: number;
   category: string;
   tags: string[];
@@ -31,24 +36,30 @@ export interface IVideo extends Document {
 const videoSchema = new mongoose.Schema(
   {
     videoFile: {
-      type: String, // cloudinary url
-      required: true,
+      url: {
+        type: String,
+      },
+      publicId: {
+        type: String,
+      },
     },
     title: {
       type: String,
-      required: true,
-      min: 5,
-      max: 150,
+      minLenght: 5,
+      maxLength: 150,
     },
     description: {
       type: String,
-      required: true,
-      min: 5,
-      max: 1000,
+      minLength: 5,
+      maxLength: 1000,
     },
     thumbnail: {
-      type: String, // cloudinary url
-      required: true,
+      url: {
+        type: String,
+      },
+      publicId: {
+        type: String,
+      },
     },
     duration: {
       type: Number,
@@ -56,7 +67,6 @@ const videoSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: true,
     },
     tags: [
       {
@@ -108,6 +118,10 @@ videoSchema.index({
   createdAt: -1,
   _id: -1,
 });
+
+videoSchema.index({ "videoFile.publicId": 1 }, { unique: true });
+
+videoSchema.index({ title: "text", description: "text", tags: "text" });
 
 // Added a plugin of mongoose aggregate paginate version 2 for pagination
 videoSchema.plugin(mongooseAggregatePaginate);
