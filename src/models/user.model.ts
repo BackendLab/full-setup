@@ -124,7 +124,7 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// Adding Comparing password algorith using bcrypt
+// Adding Comparing password algorithm using bcrypt
 // NOTE: This bcrypt method helps in comparing password with getting password as a string and hashed password
 
 userSchema.methods.comparePassword = async function (password: string) {

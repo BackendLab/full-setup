@@ -10,6 +10,13 @@ interface ChannelProfile {
   subscribersCount: number;
 }
 
+interface UploadVideoPayload {
+  videoFile: {
+    url: string;
+    publicId: string;
+  };
+  duration: number;
+}
 interface VideoResult {
   video: {
     id: string;
@@ -113,4 +120,34 @@ export const getUploadSignatureService = async () => {
     cloudName: Bun.env.CLOUDINARY_CLOUD_NAME,
     folder: Bun.env.CLOUDINARY_FOLDER,
   };
+};
+
+// create Video record / upload video
+export const uploadVideoService = async (
+  channelId: string,
+  payload: UploadVideoPayload
+) => {
+  // check if the payload are valid or not
+  if (!payload.videoFile.url || !payload.videoFile.publicId) {
+    throw new ApiError(400, "Invalid Video File Payload");
+  }
+  // create the video record in DB but keep the metadata empty
+  const createVideoRecord = await Video.create({
+    channel: channelId,
+    videoFile: {
+      url: payload.videoFile.url,
+      publicId: payload.videoFile.publicId,
+    },
+    duration: payload.duration,
+    title: "",
+    description: "",
+    category: "",
+    tags: [],
+    visibility: "PRIVATE",
+    views: 0,
+    likesCount: 0,
+    commentsCount: 0,
+  });
+  // return the video
+  return createVideoRecord;
 };
