@@ -23,6 +23,8 @@ router.get(
 // For directly upload video from frontend I need 3 apis - 1st - signature assigning, 2nd - uploading video / creating video record in DB, 3rd - updating video metadata
 
 // Assigning browser a signaturee for authorization
-router.get("/", verifyJwt, getUploadSignature);
+router.get("/upload-signature", verifyJwt, getUploadSignature);
+// Uploading video / Creating video record in DB
+router.post();
 
 export default router;
