@@ -4,8 +4,10 @@ import { ApiError } from "../utils/apiError";
 import {
   getSingleVideoService,
   getUploadSignatureService,
+  uploadVideoService,
 } from "../services/video.service";
 import { ApiResponse } from "../utils/apiResponse";
+import { Channel } from "../models/channel.model";
 
 // Get Single Video
 export const getSingleVideo = asyncHandler(
@@ -46,3 +48,32 @@ export const getUploadSignature = asyncHandler(
       );
   }
 );
+
+// Upload Video / Creating video Record In DB
+export const uploadVideo = asyncHandler(async (req: Request, res: Response) => {
+  // gte the user id
+  const userId = req.user?._id;
+  // find the channel using userId and extract the channel Id
+  const channel = await Channel.findOne({
+    owner: userId,
+  }).select("_id");
+  // ckeck if the channel exists or not
+  if (!channel) {
+    throw new ApiError(404, "Channel Not Found");
+  }
+  // get the videoFile from the user
+  const { videoFile, duration } = req.body;
+  // check if the videoFile exists or not
+  if (!videoFile || !duration) {
+    throw new ApiError(400, "VideoFile is Required");
+  }
+  // call the service
+  const uploadVideo = await uploadVideoService(channel._id.toString(), {
+    videoFile,
+    duration,
+  });
+  // give back the response to the client
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Video uploaded Successfully", uploadVideo));
+});
