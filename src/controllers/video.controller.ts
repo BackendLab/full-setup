@@ -1,9 +1,13 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
-import { getSingleVideoService } from "../services/video.service";
+import {
+  getSingleVideoService,
+  getUploadSignatureService,
+} from "../services/video.service";
 import { ApiResponse } from "../utils/apiResponse";
 
+// Get Single Video
 export const getSingleVideo = asyncHandler(
   async (req: Request, res: Response) => {
     // get the video and viewer id
@@ -23,6 +27,22 @@ export const getSingleVideo = asyncHandler(
       .status(200)
       .json(
         new ApiResponse(200, "Single Video fetched Successfully!", singleVideo)
+      );
+  }
+);
+
+// Uploading Video
+// Get Upload Signature
+export const getUploadSignature = asyncHandler(
+  async (req: Request, res: Response) => {
+    // In this request client won't send anything just call for getting the signature, so no requset
+    // call the service
+    const uploadSignature = await getUploadSignatureService();
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Signature fetched successfully", uploadSignature)
       );
   }
 );
