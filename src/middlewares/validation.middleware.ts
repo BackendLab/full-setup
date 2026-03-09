@@ -3,6 +3,7 @@ import type { ZodType } from "zod";
 
 // What this middleware do is validate the zod schema in the route before sending request to controller
 // This function simply parse the upcoming request and check whether the data is correct and expected or not
+// This is a higher order arrow function
 
 export const validate =
   (schema: ZodType) => (req: Request, _res: Response, next: NextFunction) => {

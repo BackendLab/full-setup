@@ -31,7 +31,7 @@ export const changePasswordSchema = z.object({
     newPassword: z
       .string()
       .min(8, "New password must be 8 characters")
-      .max(16, "New Password must noty be more than 16 characters"),
+      .max(16, "New Password must not be more than 16 characters"),
   }),
 });
 

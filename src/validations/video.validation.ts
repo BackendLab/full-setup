@@ -13,3 +13,16 @@ export const UploadVideoSchema = z.object({
   }),
   duration: z.number(),
 });
+
+export const updateMetadataSchema = z.object({
+  params: z.object({
+    videoId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Video ID"),
+  }),
+  body: z.object({
+    title: z.string().min(5).max(150),
+    description: z.string().min(5).max(1000).optional(),
+    category: z.string(),
+    tags: z.array(z.string()).optional(),
+    visibility: z.enum(["PUBLIC", "PRIVATE", "UNLISTED"]),
+  }),
+});

@@ -8,7 +8,10 @@ import {
   uploadVideo,
 } from "../controllers/video.controller";
 import { validate } from "../middlewares/validation.middleware";
-import { videoParamSchema } from "../validations/video.validation";
+import {
+  updateMetadataSchema,
+  videoParamSchema,
+} from "../validations/video.validation";
 import { verifyJwt } from "../middlewares/auth.middleware";
 
 const router = Router();
@@ -29,6 +32,11 @@ router.get("/upload-signature", verifyJwt, getUploadSignature);
 // Uploading video / Creating video record in DB
 router.post("/", verifyJwt, uploadVideo);
 // Updating Video Metadata
-router.patch("/:videoId", verifyJwt, updateMetadata);
+router.patch(
+  "/:videoId",
+  verifyJwt,
+  validate(updateMetadataSchema),
+  updateMetadata
+);
 
 export default router;
