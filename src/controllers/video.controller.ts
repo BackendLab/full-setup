@@ -4,6 +4,7 @@ import { ApiError } from "../utils/apiError";
 import {
   getSingleVideoService,
   getUploadSignatureService,
+  updateMetadataService,
   uploadVideoService,
 } from "../services/video.service";
 import { ApiResponse } from "../utils/apiResponse";
@@ -77,3 +78,51 @@ export const uploadVideo = asyncHandler(async (req: Request, res: Response) => {
     .status(200)
     .json(new ApiResponse(200, "Video uploaded Successfully", uploadVideo));
 });
+
+// Update Metadata
+export const updateMetadata = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the videoId
+    const { videoId } = req.params;
+    // check if the video exists or not
+    if (!videoId) {
+      throw new ApiError(400, "Video ID ius required");
+    }
+
+    const userId = req.user?._id;
+    // get the channel id from the channel
+    const channel = await Channel.findOne({
+      owner: userId,
+    }).select("_id");
+    // check if the channel exists or not
+    if (!channel) {
+      throw new ApiError(404, "Channel Not Found");
+    }
+    // get the data from user
+    const { title, description, category, tags, playlist, visibility } =
+      req.body;
+    // call the service
+    const updatedMetadata = await updateMetadataService(
+      videoId,
+      channel._id.toString(),
+      {
+        title,
+        description,
+        category,
+        tags,
+        playlist,
+        visibility,
+      }
+    );
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Video Metadata Updated Successfully",
+          updatedMetadata
+        )
+      );
+  }
+);

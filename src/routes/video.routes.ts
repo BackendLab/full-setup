@@ -4,6 +4,7 @@ import { optionalAuth } from "../middlewares/optionalAuth.middleware";
 import {
   getSingleVideo,
   getUploadSignature,
+  updateMetadata,
   uploadVideo,
 } from "../controllers/video.controller";
 import { validate } from "../middlewares/validation.middleware";
@@ -27,5 +28,7 @@ router.get(
 router.get("/upload-signature", verifyJwt, getUploadSignature);
 // Uploading video / Creating video record in DB
 router.post("/", verifyJwt, uploadVideo);
+// Updating Video Metadata
+router.patch("/:videoId", verifyJwt, updateMetadata);
 
 export default router;
