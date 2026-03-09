@@ -1,6 +1,7 @@
+import { Types } from "mongoose";
 import cloudinary from "../config/cloudinary";
 import { Subscription } from "../models/subscription.model";
-import { Video } from "../models/video.model";
+import { Video, VideoVisibility } from "../models/video.model";
 import { ApiError } from "../utils/apiError";
 
 interface ChannelProfile {
@@ -34,6 +35,16 @@ interface VideoResult {
     channel: ChannelProfile;
   };
   isSubscribed: boolean;
+}
+
+// Metadata Payload
+interface MetadataPayload {
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  playlist: string;
+  visibility: string;
 }
 
 // Get single video service
@@ -76,7 +87,7 @@ export const getSingleVideoService = async (
       id: video._id.toString(),
       title: video.title,
       description: video.description,
-      thumbnail: video.thumbnail,
+      thumbnail: video.thumbnail?.url ?? "",
       duration: video.duration,
       tags: video.tags,
       createdAt: video.createdAt,
@@ -150,4 +161,33 @@ export const uploadVideoService = async (
   });
   // return the video
   return createVideoRecord;
+};
+
+// Update Metadata Service
+export const updateMetadataService = async (
+  // get the video and channel Id
+  videoId: string,
+  channelId: string,
+  { title, description, category, tags, playlist, visibility }: MetadataPayload
+) => {
+  // find the video
+  const video = await Video.findOne({
+    _id: videoId,
+    channel: channelId,
+  });
+  // check if video exists or
+  if (!video) {
+    throw new ApiError(404, "Video Not Found!");
+  }
+  // update the video metadata and save the video
+  video.title = title;
+  video.description = description;
+  video.category = category;
+  video.tags = tags;
+  video.playlist = new Types.ObjectId(playlist);
+  video.visibility = visibility as VideoVisibility;
+
+  await video.save({ validateBeforeSave: false });
+  // return the updated video
+  return video;
 };
