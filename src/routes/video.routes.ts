@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { optionalAuth } from "../middlewares/optionalAuth.middleware";
 import {
+  addView,
   getSingleVideo,
   getUploadSignature,
   updateMetadata,
@@ -41,5 +42,5 @@ router.patch(
 
 // Engagement Routes of video
 // view route
-router.post("/:videoId/view", optionalAuth);
+router.post("/:videoId/view", optionalAuth, addView);
 export default router;
