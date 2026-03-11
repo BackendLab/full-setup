@@ -3,6 +3,8 @@ import cloudinary from "../config/cloudinary";
 import { Subscription } from "../models/subscription.model";
 import { Video, VideoVisibility } from "../models/video.model";
 import { ApiError } from "../utils/apiError";
+import crypto from "crypto";
+import { View } from "../models/view.model";
 
 interface ChannelProfile {
   _id: string;
@@ -190,4 +192,62 @@ export const updateMetadataService = async (
   await video.save({ validateBeforeSave: false });
   // return the updated video
   return video;
+};
+
+// Engagement Services
+// Adding view Service
+export const addViewService = async (
+  videoId: string,
+  userId: string | null,
+  sessionId: string
+) => {
+  // check who is the user - is the user logged in or not
+  let viewerKey: string = "";
+
+  let newSessionId = null;
+  if (userId) {
+    viewerKey = `user-${userId}`;
+  } else {
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      // set session cookie fro 30 days
+      newSessionId = sessionId;
+    }
+    viewerKey = sessionId;
+  }
+  // check if the viewer already watched the video or not
+  const existingView = await View.findOne({
+    viewerKey,
+    video: videoId,
+  });
+
+  const now = new Date();
+
+  if (!existingView) {
+    await View.create({
+      viewerKey,
+      video: videoId,
+      lastCountedAt: now,
+    });
+    // after crerating view document icrement the vierw count in video
+    await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
+
+    return { counted: true, newSessionId };
+  }
+
+  const VIEW_WINDOW = 1000 * 60 * 60 * 3;
+
+  const timeDiff = now.getTime() - existingView.lastCountedAt.getTime();
+
+  if (timeDiff > VIEW_WINDOW) {
+    existingView.lastCountedAt = now;
+
+    await existingView.save({ validateBeforeSave: false });
+
+    await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
+
+    return { counted: true, newSessionId };
+  }
+
+  return { counted: false, newSessionId };
 };
