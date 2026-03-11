@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import {
+  addViewService,
   getSingleVideoService,
   getUploadSignatureService,
   updateMetadataService,
@@ -126,3 +127,38 @@ export const updateMetadata = asyncHandler(
       );
   }
 );
+
+// Engagement Controller
+// Adding View
+// Note: For adding the view for both - logged in or guest user we need to check whether the user logged in or not and even if the user is not logged in the user must able to watch the video, so we store sessions and store that to cookies
+export const addView = asyncHandler(async (req: Request, res: Response) => {
+  // get the videoId
+  const { videoId } = req.params;
+
+  if (!videoId) {
+    throw new ApiError(400, "Video ID is required");
+  }
+  // get the userId for authorization
+  const userId = req.user?._id.toString() || null;
+
+  // get the sessionId to set the cookies
+  const sessionId = req.cookies.viewer_session;
+  // call the service - Note: while calling the service we also have to send response to the service cause we need to set the cokkies from service
+  const result = await addViewService(videoId, userId, sessionId);
+
+  // give back the response to the client
+  if (result.newSessionId) {
+    res.cookie("viewer_session", result.newSessionId, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+    });
+  }
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, "View Added Successfully", {
+        counted: result.counted,
+      })
+    );
+});

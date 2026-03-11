@@ -39,4 +39,7 @@ router.patch(
   updateMetadata
 );
 
+// Engagement Routes of video
+// view route
+router.post("/:videoId/view", optionalAuth);
 export default router;
