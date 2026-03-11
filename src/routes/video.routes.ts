@@ -42,5 +42,10 @@ router.patch(
 
 // Engagement Routes of video
 // view route
-router.post("/:videoId/view", optionalAuth, addView);
+router.post(
+  "/:videoId/view",
+  optionalAuth,
+  validate(videoParamSchema),
+  addView
+);
 export default router;
