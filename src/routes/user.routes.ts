@@ -16,6 +16,7 @@ import {
   updateAvatarSchema,
   updateCoverImageSchema,
   updateUserSchema,
+  watchHistorySchema,
 } from "../validations/user.validation";
 
 const router = Router();
@@ -46,6 +47,11 @@ router.patch(
 router.delete("/me", verifyJwt, deleteUser);
 
 // Watch History Routes
-router.get("/me/watch-history", verifyJwt, getWatchHistory);
+router.get(
+  "/me/watch-history",
+  verifyJwt,
+  validate(watchHistorySchema),
+  getWatchHistory
+);
 
 export default router;

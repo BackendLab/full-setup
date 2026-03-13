@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UserState } from "../constants";
+import { Query } from "mongoose";
 
 // Update User Zod Schema
 export const updateUserSchema = z.object({
@@ -38,4 +39,13 @@ export const changePasswordSchema = z.object({
 // User State Schema
 export const userStateSchema = z.object({
   state: z.enum(UserState),
+});
+
+// watch history validations
+// Get Watch history Schema
+export const watchHistorySchema = z.object({
+  query: z.object({
+    page: z.string().default("1").transform(Number),
+    limit: z.string().default("12").transform(Number),
+  }),
 });
