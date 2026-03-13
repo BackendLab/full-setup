@@ -242,3 +242,22 @@ export const getWatchHistoryService = async (
     },
   };
 };
+
+// Update Watch History
+export const updateWatchHistoryService = async (
+  // get the user & video id's
+  userId: string,
+  videoId: string
+) => {
+  // update history
+  const updateHistory = await WatchHistory.findOneAndUpdate(
+    {
+      user: userId,
+      video: videoId,
+    },
+    { watchedAt: -1 },
+    { upsert: true, new: true }
+  );
+  // return the updated history
+  return updateHistory;
+};
