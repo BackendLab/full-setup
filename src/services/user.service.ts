@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import cloudinary from "../config/cloudinary";
 import { User } from "../models/user.model";
 import { WatchHistory } from "../models/watchHistory.model";
@@ -260,4 +261,27 @@ export const updateWatchHistoryService = async (
   );
   // return the updated history
   return updateHistory;
+};
+
+// Delete the video from watch history
+export const deleteWatchHistoryVideoService = async (
+  // get the user & video Id
+  userId: string,
+  videoId: string
+) => {
+  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+    throw new ApiError(400, "Invalid video id");
+  }
+  // delete the video from DB
+  const deleteVideo = await WatchHistory.findOneAndDelete({
+    user: userId,
+    video: videoId,
+  });
+
+  // check if the delete video not exist then throw error
+  if (!deleteVideo) {
+    throw new ApiError(404, "Watch History not found");
+  }
+  // return the response
+  return deleteVideo;
 };
