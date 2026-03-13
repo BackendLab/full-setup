@@ -5,6 +5,7 @@ import {
   updateCoverImageService,
   changePasswordService,
   deleteUserService,
+  getWatchHistoryService,
 } from "../services/user.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -184,3 +185,30 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
     .clearCookie("refreshToken")
     .json(new ApiResponse(200, "User Deleted Successfully!", null));
 });
+
+// Watch History Controller
+// Get Watch History
+export const getWatchHistory = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the user id
+    const userId = req.user?._id;
+    // check if the user exists or not
+    if (!userId) {
+      throw new ApiError(400, "Unauthrorized Request");
+    }
+    // get the page and limit params
+    const { page, limit } = req.query;
+    // call the service
+    const watchHistory = await getWatchHistoryService(
+      userId.toString(),
+      Number(page),
+      Number(limit)
+    );
+    // give back the reposne to the
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "watch history fetched successfully", watchHistory)
+      );
+  }
+);

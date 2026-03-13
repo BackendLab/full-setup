@@ -4,6 +4,7 @@ import {
   changePassword,
   deleteUser,
   getCurrentUser,
+  getWatchHistory,
   // updateAvatar,
   updateCoverImage,
   updateUser,
@@ -43,5 +44,8 @@ router.patch(
   changePassword
 );
 router.delete("/me", verifyJwt, deleteUser);
+
+// Watch History Routes
+router.get("/me/watch-history", verifyJwt, getWatchHistory);
 
 export default router;
