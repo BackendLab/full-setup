@@ -7,6 +7,7 @@ import {
   deleteUserService,
   getWatchHistoryService,
   updateWatchHistoryService,
+  deleteWatchHistoryVideoService,
 } from "../services/user.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -241,6 +242,39 @@ export const updateWatchHistory = asyncHandler(
           200,
           "Watch History updated Successfully",
           updatedHistory
+        )
+      );
+  }
+);
+
+// Delete videos from watch history
+export const deleteWatchHistoryVideo = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the userId and check if the request is authorized or not
+    const userId = req.user?._id;
+
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized Request");
+    }
+    // get the videoId and check if the video Is is present or not
+    const { videoId } = req.params;
+
+    if (!videoId) {
+      throw new ApiError(403, "Video ID is required");
+    }
+    // call the service
+    const deletedVideo = await deleteWatchHistoryVideoService(
+      userId.toString(),
+      videoId
+    );
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Video deleted successfully from watch history",
+          deletedVideo
         )
       );
   }

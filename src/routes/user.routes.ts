@@ -3,6 +3,7 @@ import { verifyJwt } from "../middlewares/auth.middleware";
 import {
   changePassword,
   deleteUser,
+  deleteWatchHistoryVideo,
   getCurrentUser,
   getWatchHistory,
   updateCoverImage,
@@ -47,12 +48,20 @@ router.get(
   validate(watchHistorySchema),
   getWatchHistory
 );
-
+// Update watch history
 router.patch(
   "/me/watch-history/:videoId",
   verifyJwt,
   validate(videoParamSchema),
   updateWatchHistory
+);
+
+// Delete videos from watch history
+router.delete(
+  "/me/watch-history/:videoId",
+  verifyJwt,
+  validate(videoParamSchema),
+  deleteWatchHistoryVideo
 );
 
 export default router;
