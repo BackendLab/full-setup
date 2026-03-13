@@ -1,5 +1,6 @@
 import cloudinary from "../config/cloudinary";
 import { User } from "../models/user.model";
+import { WatchHistory } from "../models/watchHistory.model";
 import { ApiError } from "../utils/apiError";
 import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
@@ -195,4 +196,49 @@ export const deleteUserService = async (userId: string) => {
   }
   // delete the user
   await User.findByIdAndDelete(userId);
+};
+
+// Watch History Service
+// get watch history
+export const getWatchHistoryService = async (
+  // get the userId and query params
+  userId: string,
+  page: number,
+  limit: number
+) => {
+  // calculating offset pagination
+  const skip = (page - 1) * limit;
+
+  // filter to find the watch history
+  const filter = {
+    user: userId,
+    status: "ACTIVE",
+  };
+
+  // get all the watch history
+  const [watchHistory, totalVideos] = await Promise.all([
+    WatchHistory.find(filter)
+      .sort({ watchedAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("video"),
+
+    WatchHistory.countDocuments(filter),
+  ]);
+
+  // calculate totla pages
+  const totalPages = Math.ceil(totalVideos / limit);
+
+  // return the response
+  return {
+    watchHistory,
+    pagination: {
+      page,
+      limit,
+      totalVideos,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+    },
+  };
 };

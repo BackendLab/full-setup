@@ -374,7 +374,7 @@ export const getPlaylistsService = async (
   // Calculate offset pagination
   const skip = (page - 1) * limit;
 
-  // creatinf filter for finding playlists
+  // creating filter for finding playlists
   const filter = {
     channel: channelId,
     visibility: "PUBLIC",
@@ -401,6 +401,7 @@ export const getPlaylistsService = async (
       page,
       limit,
       totalPlaylists,
+      currentPage: page,
       totalPages,
       hasNextPage: page < totalPages,
     },
