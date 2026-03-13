@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { UserState } from "../constants";
-import { Query } from "mongoose";
 
 // Update User Zod Schema
 export const updateUserSchema = z.object({

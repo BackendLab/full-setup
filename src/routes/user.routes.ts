@@ -5,7 +5,6 @@ import {
   deleteUser,
   getCurrentUser,
   getWatchHistory,
-  // updateAvatar,
   updateCoverImage,
   updateUser,
   updateWatchHistory,
@@ -18,6 +17,7 @@ import {
   updateUserSchema,
   watchHistorySchema,
 } from "../validations/user.validation";
+import { videoParamSchema } from "../validations/video.validation";
 
 const router = Router();
 
@@ -48,6 +48,11 @@ router.get(
   getWatchHistory
 );
 
-router.patch("/me/watch-history/:videoId", verifyJwt, updateWatchHistory);
+router.patch(
+  "/me/watch-history/:videoId",
+  verifyJwt,
+  validate(videoParamSchema),
+  updateWatchHistory
+);
 
 export default router;
