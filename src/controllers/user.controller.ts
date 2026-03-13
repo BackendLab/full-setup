@@ -6,6 +6,7 @@ import {
   changePasswordService,
   deleteUserService,
   getWatchHistoryService,
+  updateWatchHistoryService,
 } from "../services/user.service";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -209,6 +210,38 @@ export const getWatchHistory = asyncHandler(
       .status(200)
       .json(
         new ApiResponse(200, "watch history fetched successfully", watchHistory)
+      );
+  }
+);
+
+// Update Watch History
+export const updateWatchHistory = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the user Id and video Id
+    const userId = req.user?._id;
+
+    const { videoId } = req.params;
+    // check user and video exists or not
+    if (!userId) {
+      throw new ApiError(400, "Unauthorized Request");
+    }
+    if (!videoId) {
+      throw new ApiError(404, "Video ID is required");
+    }
+    // call the service
+    const updatedHistory = await updateWatchHistoryService(
+      userId.toString(),
+      videoId
+    );
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Watch History updated Successfully",
+          updatedHistory
+        )
       );
   }
 );

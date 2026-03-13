@@ -8,12 +8,12 @@ import {
   // updateAvatar,
   updateCoverImage,
   updateUser,
+  updateWatchHistory,
 } from "../controllers/user.controller";
 import { upload } from "../middlewares/multer.middleware";
 import { validate } from "../middlewares/validation.middleware";
 import {
   changePasswordSchema,
-  updateAvatarSchema,
   updateCoverImageSchema,
   updateUserSchema,
   watchHistorySchema,
@@ -24,13 +24,7 @@ const router = Router();
 // Secured Route
 router.get("/me", verifyJwt, getCurrentUser);
 router.patch("/profile", verifyJwt, validate(updateUserSchema), updateUser);
-// router.patch(
-//   "/avatar",
-//   verifyJwt,
-//   upload.single("avatar"),
-//   validate(updateAvatarSchema),
-//   updateAvatar
-// );
+
 router.patch(
   "/cover-image",
   verifyJwt,
@@ -53,5 +47,7 @@ router.get(
   validate(watchHistorySchema),
   getWatchHistory
 );
+
+router.patch("/me/watch-history/:videoId", verifyJwt, updateWatchHistory);
 
 export default router;

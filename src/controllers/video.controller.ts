@@ -87,7 +87,7 @@ export const updateMetadata = asyncHandler(
     const { videoId } = req.params;
     // check if the video exists or not
     if (!videoId) {
-      throw new ApiError(400, "Video ID ius required");
+      throw new ApiError(400, "Video ID is required");
     }
 
     const userId = req.user?._id;
@@ -154,11 +154,9 @@ export const addView = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(200, "View Added Successfully", {
-        counted: result.counted,
-      })
-    );
+  res.status(200).json(
+    new ApiResponse(200, "View Added Successfully", {
+      counted: result.counted,
+    })
+  );
 });
