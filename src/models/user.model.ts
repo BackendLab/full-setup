@@ -20,7 +20,7 @@ export interface IUser extends Document {
   refreshToken?: string;
   avatar: CloudinaryFiles;
   coverImage: CloudinaryFiles;
-  state: UserState;
+  status: UserState;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -34,8 +34,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
-      index: true,
-      unique: true,
       trim: true,
     },
     fullName: {
@@ -46,26 +44,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
-      index: true,
     },
     password: {
       // must store hasehed password
       type: String,
       required: true,
-      minLength: 8,
-      maxLength: 16,
+      minlength: 8,
+      maxlength: 16,
     },
     bio: {
       type: String,
       default: "",
-      maxLength: 200,
+      maxlength: 200,
     },
-    watchHistory: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Videos",
-      },
-    ],
+
     subscribers: {
       type: Number,
       required: true,
@@ -89,19 +81,11 @@ const userSchema = new mongoose.Schema(
         type: String,
       },
     },
-    coverImage: {
-      // Cloudinary Image String
-      url: {
-        type: String,
-      },
-      publicId: {
-        type: String,
-      },
-    },
+
     refreshToken: {
       type: String,
     },
-    state: {
+    status: {
       type: String,
       enum: Object.values(UserState),
       default: UserState.ACTIVE,
@@ -111,7 +95,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Indexes
-userSchema.index({ username: 1 }, { unique: true });
+userSchema.index({ username: 1 });
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ state: 1 });
 

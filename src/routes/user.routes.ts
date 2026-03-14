@@ -6,7 +6,6 @@ import {
   deleteWatchHistoryVideo,
   getCurrentUser,
   getWatchHistory,
-  updateCoverImage,
   updateUser,
   updateWatchHistory,
 } from "../controllers/user.controller";
@@ -26,13 +25,6 @@ const router = Router();
 router.get("/me", verifyJwt, getCurrentUser);
 router.patch("/profile", verifyJwt, validate(updateUserSchema), updateUser);
 
-router.patch(
-  "/cover-image",
-  verifyJwt,
-  upload.single("coverImage"),
-  validate(updateCoverImageSchema),
-  updateCoverImage
-);
 router.patch(
   "/change-password",
   verifyJwt,

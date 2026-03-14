@@ -110,43 +110,6 @@ export const updateUserService = async (
 // };
 
 // Update Cover Image Service
-export const updateCoverImageService = async (
-  userId: string,
-  filePath: string
-  // get the userID and filepath from controller
-) => {
-  // get the user through userId
-  const user = await User.findById(userId);
-  // check if user exists or not
-  if (!user) {
-    throw new ApiError(401, "User does not exist");
-  }
-
-  // upload the image
-  const uploadedCoverImage = await uploadToCloudinary(filePath);
-
-  // check if there is previous cover image exists, If yes then delete it
-  if (user.coverImage?.publicId) {
-    await deleteFromCloudinary(user.coverImage.publicId);
-  }
-  // once new cover image uploaded and previous one is deleted then update & save the user in DB
-  user.coverImage = {
-    url: uploadedCoverImage?.url,
-    publicId: uploadedCoverImage?.public_id,
-  };
-  await user.save({ validateBeforeSave: false });
-
-  // Sanitize the user without quering to DB
-  // How to do it without query DB ->
-  // save the user as a object inside a variable
-  // destructure the user object and extract password & refresh token then save the remaining fields in safeuser.
-  // NOTE: The ... is rest operator, simple way to remeber this if ... is used in left side of operand then it's rest operator, if it's in right side then spread operator
-  const userObject = user.toObject();
-  const { password, refreshToken, ...safeUser } = userObject;
-
-  // return the update coverimage
-  return { user: safeUser };
-};
 
 // Change password Service
 export const changePasswordService = async (

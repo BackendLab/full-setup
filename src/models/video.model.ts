@@ -118,9 +118,7 @@ videoSchema.index({
   createdAt: -1,
   _id: -1,
 });
-
 videoSchema.index({ "videoFile.publicId": 1 }, { unique: true });
-
 videoSchema.index({ title: "text", description: "text", tags: "text" });
 
 // Added a plugin of mongoose aggregate paginate version 2 for pagination

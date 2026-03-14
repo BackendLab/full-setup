@@ -54,8 +54,6 @@ const playlistSchema = new mongoose.Schema(
 );
 
 // Indexes
-playlistSchema.index({ channel: 1, unique: 1 });
-playlistSchema.index({ state: 1, unique: 1 });
-playlistSchema.index({ visibility: 1, unique: 1 });
+playlistSchema.index({ channel: 1, visibility: 1, status: 1 });
 
 export const Playlist = mongoose.model("Playlist", playlistSchema);

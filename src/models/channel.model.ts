@@ -14,7 +14,7 @@ export interface IChannel {
   avatar: CloudinaryFiles;
   coverImage: CloudinaryFiles;
   subscriberCount: number;
-  state: ChannelState;
+  status: ChannelState;
 }
 
 const channelSchema = new mongoose.Schema(
@@ -23,7 +23,6 @@ const channelSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true,
     },
     name: {
       type: String,
@@ -37,7 +36,7 @@ const channelSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
-      maxLength: 2000,
+      maxlength: 2000,
       default: "",
     },
     avatar: {
@@ -64,7 +63,7 @@ const channelSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    state: {
+    status: {
       type: String,
       enum: Object.values(ChannelState),
       default: ChannelState.ACTIVE,
@@ -74,6 +73,6 @@ const channelSchema = new mongoose.Schema(
 );
 
 channelSchema.index({ owner: 1 });
-channelSchema.index({ state: 1 });
+channelSchema.index({ status: 1 });
 
 export const Channel = mongoose.model<IChannel>("Channel", channelSchema);
