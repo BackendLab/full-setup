@@ -50,5 +50,10 @@ router.post(
   addView
 );
 // Toggle Like
-router.post("/:videoId/toggle-like", verifyJwt, toggleLike);
+router.post(
+  "/:videoId/toggle-like",
+  verifyJwt,
+  validate(videoParamSchema),
+  toggleLike
+);
 export default router;
