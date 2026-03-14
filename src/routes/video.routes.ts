@@ -5,6 +5,7 @@ import {
   addView,
   getSingleVideo,
   getUploadSignature,
+  toggleLike,
   updateMetadata,
   uploadVideo,
 } from "../controllers/video.controller";
@@ -48,4 +49,6 @@ router.post(
   validate(videoParamSchema),
   addView
 );
+// Toggle Like
+router.post("/:videoId/toggle-like", verifyJwt, toggleLike);
 export default router;

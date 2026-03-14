@@ -5,6 +5,7 @@ import {
   addViewService,
   getSingleVideoService,
   getUploadSignatureService,
+  toggleLikeService,
   updateMetadataService,
   uploadVideoService,
 } from "../services/video.service";
@@ -159,4 +160,24 @@ export const addView = asyncHandler(async (req: Request, res: Response) => {
       counted: result.counted,
     })
   );
+});
+
+// Liking or Unliking the video
+export const toggleLike = asyncHandler(async (req: Request, res: Response) => {
+  // get the user and video id
+  const userId = req.user?._id;
+  const { videoId } = req.params;
+  // check if both exists or not
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized Request");
+  }
+  if (!videoId) {
+    throw new ApiError(400, "Video ID is required");
+  }
+  // call the service
+  const toggledLike = await toggleLikeService(userId.toString(), videoId);
+  // give back the response to the client
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Like Toggled successfully!", toggledLike));
 });

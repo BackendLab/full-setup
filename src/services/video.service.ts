@@ -5,6 +5,7 @@ import { Video, VideoVisibility } from "../models/video.model";
 import { ApiError } from "../utils/apiError";
 import crypto from "crypto";
 import { View } from "../models/view.model";
+import { Like } from "../models/like.model";
 
 interface ChannelProfile {
   _id: string;
@@ -250,4 +251,42 @@ export const addViewService = async (
   }
 
   return { counted: false, newSessionId };
+};
+
+// Liking or unliking video
+export const toggleLikeService = async (userId: string, videoId: string) => {
+  // check if the like already exists or not
+  const existingLike = await Like.findOne({
+    user: userId,
+    video: videoId,
+  }).lean();
+  // if the video is liked already than delete the like
+  if (existingLike) {
+    await Like.deleteOne({
+      _id: existingLike._id,
+    });
+
+    // and update the video likes count
+    const unlikeVideo = await Video.findByIdAndUpdate(
+      videoId,
+      { $inc: { likesCount: -1 } },
+      { new: true }
+    ).select("likesCount");
+
+    // return the like status and like count
+    return {
+      liked: false,
+      likesCount: unlikeVideo?.likesCount,
+    };
+  }
+  // if video is not liked then add the like
+  await Like.create({ user: userId, video: videoId });
+  // Then update the like count in video
+  const likeVideo = await Video.findByIdAndUpdate(
+    videoId,
+    { $inc: { likesCount: 1 } },
+    { new: true }
+  ).select("likesCount");
+  // return the like status and like count
+  return { liked: true, likesCount: likeVideo?.likesCount };
 };
