@@ -3,6 +3,7 @@ import { Router } from "express";
 import { optionalAuth } from "../middlewares/optionalAuth.middleware";
 import {
   addView,
+  deleteComment,
   getComments,
   getSingleVideo,
   getUploadSignature,
@@ -86,4 +87,7 @@ router.patch(
   validate(updateCommentSchema),
   updateComment
 );
+// Delete Comment
+router.delete("/:videoId/:commentId", verifyJwt, deleteComment);
+
 export default router;

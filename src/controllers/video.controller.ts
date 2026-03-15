@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import {
   addViewService,
+  deleteCommentService,
   getCommentsService,
   getSingleVideoService,
   getUploadSignatureService,
@@ -266,5 +267,28 @@ export const updateComment = asyncHandler(
       .json(
         new ApiResponse(200, "Comment Edited successfully", updatedComment)
       );
+  }
+);
+
+// Delete Comment
+export const deleteComment = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the commentId and userId
+    const userId = req.user?._id;
+
+    const { commentId } = req.params;
+    // check if the commentId and user Id exists or not
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized Request");
+    }
+    if (!commentId) {
+      throw new ApiError(400, "Comment ID is required");
+    }
+    // call the service
+    await deleteCommentService(userId.toString(), commentId);
+    // give abck the reponse to the client
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Comment deleted successfully", null));
   }
 );

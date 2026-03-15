@@ -371,3 +371,27 @@ export const updateCommentService = async (
   // return the updated comment
   return comment;
 };
+
+// Delete Comment Service
+export const deleteCommentService = async (
+  // get hte id's
+  userId: string,
+  commentId: string
+) => {
+  // find the comment and delete
+  const comment = await Comment.findOneAndDelete({
+    _id: commentId,
+    user: userId,
+  });
+  // check if the comment exists or not
+  if (!comment) {
+    throw new ApiError(404, "Commnet Not found or Unauthorized");
+  }
+  // update the comment count in video and also set the comment counter minimum go to zero
+  await Video.updateOne(
+    { _id: comment.video, commentsCount: { $gt: 0 } },
+    { $inc: { commentsCount: -1 } }
+  );
+  // return the reponse
+  return true;
+};
