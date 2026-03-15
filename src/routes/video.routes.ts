@@ -21,6 +21,7 @@ import { verifyJwt } from "../middlewares/auth.middleware";
 import {
   commentsSchema,
   postCommentSchema,
+  updateCommentSchema,
 } from "../validations/comment.validation";
 
 const router = Router();
@@ -79,5 +80,10 @@ router.post(
   postComment
 );
 // Update Comment
-router.patch("/:videoid/:commentId", verifyJwt, updateComment);
+router.patch(
+  "/:videoid/:commentId",
+  verifyJwt,
+  validate(updateCommentSchema),
+  updateComment
+);
 export default router;

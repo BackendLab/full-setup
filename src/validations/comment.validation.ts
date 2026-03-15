@@ -20,3 +20,13 @@ export const postCommentSchema = z.object({
     content: z.string().max(1000),
   }),
 });
+
+// Update Comment Validation Schema
+export const updateCommentSchema = z.object({
+  params: z.object({
+    commentId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Comment ID"),
+  }),
+  body: z.object({
+    content: z.string().max(1000),
+  }),
+});
