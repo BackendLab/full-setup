@@ -12,6 +12,7 @@ import {
 } from "../controllers/video.controller";
 import { validate } from "../middlewares/validation.middleware";
 import {
+  commentsSchema,
   updateMetadataSchema,
   videoParamSchema,
 } from "../validations/video.validation";
@@ -59,5 +60,10 @@ router.post(
 );
 // Comment Routes
 // Get all comments for a video
-router.get("/:videoId/comments", verifyJwt, getComments);
+router.get(
+  "/:videoId/comments",
+  verifyJwt,
+  validate(commentsSchema),
+  getComments
+);
 export default router;
