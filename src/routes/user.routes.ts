@@ -13,7 +13,6 @@ import { upload } from "../middlewares/multer.middleware";
 import { validate } from "../middlewares/validation.middleware";
 import {
   changePasswordSchema,
-  updateCoverImageSchema,
   updateUserSchema,
   watchHistorySchema,
 } from "../validations/user.validation";

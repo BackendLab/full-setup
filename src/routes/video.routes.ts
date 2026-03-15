@@ -3,6 +3,7 @@ import { Router } from "express";
 import { optionalAuth } from "../middlewares/optionalAuth.middleware";
 import {
   addView,
+  getComments,
   getSingleVideo,
   getUploadSignature,
   toggleLike,
@@ -56,4 +57,7 @@ router.post(
   validate(videoParamSchema),
   toggleLike
 );
+// Comment Routes
+// Get all comments for a video
+router.get("/:videoId/comments", verifyJwt, getComments);
 export default router;

@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import {
   addViewService,
+  getCommentsService,
   getSingleVideoService,
   getUploadSignatureService,
   toggleLikeService,
@@ -180,4 +181,26 @@ export const toggleLike = asyncHandler(async (req: Request, res: Response) => {
   res
     .status(200)
     .json(new ApiResponse(200, "Like Toggled successfully!", toggledLike));
+});
+
+// Get all Comments of a video
+export const getComments = asyncHandler(async (req: Request, res: Response) => {
+  // get the videoId
+  const { videoId } = req.params;
+
+  if (!videoId) {
+    throw new ApiError(400, "Video ID is required");
+  }
+  // get the query parameters
+  const { page, limit } = req.query;
+  // Call the service
+  const comments = await getCommentsService(
+    videoId,
+    Number(page),
+    Number(limit)
+  );
+  // Give back the response to the client
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Comments fetched successfully", comments));
 });
