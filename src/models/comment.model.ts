@@ -1,13 +1,14 @@
 import mongoose, { Document } from "mongoose";
 
-export interface ILike extends Document {
+export interface IComment extends Document {
   user: mongoose.Types.ObjectId;
   video: mongoose.Types.ObjectId;
+  content: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const likeSchema = new mongoose.Schema(
+const commentSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -19,11 +20,16 @@ const likeSchema = new mongoose.Schema(
       ref: "Video",
       required: true,
     },
+    content: {
+      type: String,
+      required: true,
+      maxlength: 1000,
+    },
   },
   { timestamps: true }
 );
 
 // Indexes
-likeSchema.index({ user: 1, video: 1 }, { unique: true }); // No duplicate likes
+commentSchema.index({ video: 1, createdAt: -1 });
 
-export const Like = mongoose.model<ILike>("Like", likeSchema);
+export const Comment = mongoose.model<IComment>("Comment", commentSchema);
