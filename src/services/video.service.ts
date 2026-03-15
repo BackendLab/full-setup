@@ -6,6 +6,7 @@ import { ApiError } from "../utils/apiError";
 import crypto from "crypto";
 import { View } from "../models/view.model";
 import { Like } from "../models/like.model";
+import { Comment } from "../models/comment.model";
 
 interface ChannelProfile {
   _id: string;
@@ -289,4 +290,39 @@ export const toggleLikeService = async (userId: string, videoId: string) => {
   ).select("likesCount");
   // return the like status and like count
   return { liked: true, likesCount: likeVideo?.likesCount };
+};
+
+// Get Comments of video
+export const getCommentsService = async (
+  videoId: string,
+  page: number,
+  limit: number
+) => {
+  // calculate offset pagination
+  const skip = (page - 1) * limit;
+  // find all the comments with pagination
+  const [comments, totalComments] = await Promise.all([
+    Comment.find({ video: videoId })
+      .populate("user", "username avatar")
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(limit),
+
+    Comment.countDocuments({ video: videoId }),
+  ]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(totalComments / limit);
+  // return the paginated result
+  return {
+    comments,
+    pagination: {
+      page,
+      limit,
+      totalComments,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+    },
+  };
 };
