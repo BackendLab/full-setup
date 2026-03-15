@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+// Comment Param Schema
+export const commentParamSchema = z.object({
+  params: z.object({
+    commentId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Video ID"),
+  }),
+});
+
 // Comments Validation Schema
 export const commentsSchema = z.object({
   params: z.object({

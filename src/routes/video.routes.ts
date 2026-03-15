@@ -20,6 +20,7 @@ import {
 } from "../validations/video.validation";
 import { verifyJwt } from "../middlewares/auth.middleware";
 import {
+  commentParamSchema,
   commentsSchema,
   postCommentSchema,
   updateCommentSchema,
@@ -88,6 +89,11 @@ router.patch(
   updateComment
 );
 // Delete Comment
-router.delete("/:videoId/:commentId", verifyJwt, deleteComment);
+router.delete(
+  "/:videoId/:commentId",
+  verifyJwt,
+  validate(commentParamSchema),
+  deleteComment
+);
 
 export default router;
