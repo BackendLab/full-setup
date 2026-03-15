@@ -347,3 +347,27 @@ export const postCommentService = async (
   // return the updated response
   return postComment;
 };
+
+// Update Comment Service
+export const updateCommentService = async (
+  // get the id's and content
+  userId: string,
+  commentId: string,
+  content: string
+) => {
+  // find the comment
+  const comment = await Comment.findById(commentId);
+  // check if the comment exists or not
+  if (!comment) {
+    throw new ApiError(404, " Comment Not Found");
+  }
+  // check if the comment owner is same
+  if (comment.user.toString() !== userId) {
+    throw new ApiError(400, "You are unauthorized to edit");
+  }
+  // update the comment content and save to DB
+  comment.content = content;
+  await comment.save({ validateBeforeSave: false });
+  // return the updated comment
+  return comment;
+};

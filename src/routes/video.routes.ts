@@ -8,6 +8,7 @@ import {
   getUploadSignature,
   postComment,
   toggleLike,
+  updateComment,
   updateMetadata,
   uploadVideo,
 } from "../controllers/video.controller";
@@ -72,9 +73,11 @@ router.get(
 );
 // Post a comment
 router.post(
-  "/:videoId/comment",
+  "/:videoId/comments",
   verifyJwt,
   validate(postCommentSchema),
   postComment
 );
+// Update Comment
+router.patch("/:videoid/:commentId", verifyJwt, updateComment);
 export default router;

@@ -8,6 +8,7 @@ import {
   getUploadSignatureService,
   postCommentService,
   toggleLikeService,
+  updateCommentService,
   updateMetadataService,
   uploadVideoService,
 } from "../services/video.service";
@@ -231,4 +232,39 @@ export const postComment = asyncHandler(async (req: Request, res: Response) => {
     content
   );
   // give back the resposne top the client
+  res.status(200).json(new ApiResponse(200, "Comment Posted!", postedComment));
 });
+
+// Update Comment
+export const updateComment = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the userId and commentId
+    const userId = req.user?._id;
+    const { commentId } = req.params;
+
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized Request");
+    }
+    if (!commentId) {
+      throw new ApiError(400, "Comment ID is required");
+    }
+    // get the content
+    const { content } = req.body;
+
+    if (!content) {
+      throw new ApiError(400, "Content is required");
+    }
+    // call the service
+    const updatedComment = await updateCommentService(
+      userId.toString(),
+      commentId,
+      content
+    );
+    // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Comment Edited successfully", updatedComment)
+      );
+  }
+);
