@@ -6,17 +6,21 @@ import {
   getComments,
   getSingleVideo,
   getUploadSignature,
+  postComment,
   toggleLike,
   updateMetadata,
   uploadVideo,
 } from "../controllers/video.controller";
 import { validate } from "../middlewares/validation.middleware";
 import {
-  commentsSchema,
   updateMetadataSchema,
   videoParamSchema,
 } from "../validations/video.validation";
 import { verifyJwt } from "../middlewares/auth.middleware";
+import {
+  commentsSchema,
+  postCommentSchema,
+} from "../validations/comment.validation";
 
 const router = Router();
 
@@ -67,5 +71,10 @@ router.get(
   getComments
 );
 // Post a comment
-router.post("/:videoId/comment", verifyJwt);
+router.post(
+  "/:videoId/comment",
+  verifyJwt,
+  validate(postCommentSchema),
+  postComment
+);
 export default router;
