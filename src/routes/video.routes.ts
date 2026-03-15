@@ -66,4 +66,6 @@ router.get(
   validate(commentsSchema),
   getComments
 );
+// Post a comment
+router.post("/:videoId/comment", verifyJwt);
 export default router;

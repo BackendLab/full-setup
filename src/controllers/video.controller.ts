@@ -6,6 +6,7 @@ import {
   getCommentsService,
   getSingleVideoService,
   getUploadSignatureService,
+  postCommentService,
   toggleLikeService,
   updateMetadataService,
   uploadVideoService,
@@ -203,4 +204,31 @@ export const getComments = asyncHandler(async (req: Request, res: Response) => {
   res
     .status(200)
     .json(new ApiResponse(200, "Comments fetched successfully", comments));
+});
+
+// Posting a comment
+export const postComment = asyncHandler(async (req: Request, res: Response) => {
+  // get the userId, video id and content from user
+  const userId = req.user?._id;
+  const { videoId } = req.params;
+  const { content } = req.body;
+  // check if the user is authorized or not
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized Request");
+  }
+  // check if the video id exists or not
+  if (!videoId) {
+    throw new ApiError(400, "Video ID is required");
+  }
+  // check if the content came or not
+  if (!content) {
+    throw new ApiError(400, "Comment is required");
+  }
+  // call the service
+  const postedComment = await postCommentService(
+    userId.toString(),
+    videoId,
+    content
+  );
+  // give back the resposne top the client
 });

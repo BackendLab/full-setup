@@ -326,3 +326,24 @@ export const getCommentsService = async (
     },
   };
 };
+
+// Post Comment
+export const postCommentService = async (
+  // get the id's and content
+  userId: string,
+  videoId: string,
+  content: string
+) => {
+  // check if the video exists or not
+  const video = await Video.findById({ video: videoId }).select("_id");
+  // if video exists then create a comment
+  const postComment = await Comment.create({
+    user: userId,
+    video: videoId,
+    content,
+  });
+  // update the comment count in video
+  await Video.findByIdAndUpdate(videoId, { $inc: { commentsCount: 1 } });
+  // return the updated response
+  return postComment;
+};
