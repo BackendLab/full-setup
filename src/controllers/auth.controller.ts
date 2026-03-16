@@ -34,7 +34,7 @@ export const registerUser = asyncHandler(
     // Controller sends the response
     res
       .status(201)
-      .json(new ApiResponse(201, "User Resitered Successfully", user));
+      .json(new ApiResponse(201, "User Registered Successfully", user));
   }
 );
 
