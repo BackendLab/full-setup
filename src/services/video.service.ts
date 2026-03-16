@@ -395,3 +395,24 @@ export const deleteCommentService = async (
   // return the reponse
   return true;
 };
+
+// Get Related Videos
+export const getRelatedVideosService = async (videoId: string) => {
+  // get the videoId
+  // find the video and select the tags and category
+  const video = await Video.findById(videoId).select("tags category").lean();
+  // check if the video exists or not
+  if (!video) {
+    throw new ApiError(404, "Video Not Found");
+  }
+  // find the related video uising tags or category but do not include this video
+  const relatedVideos = await Video.find({
+    _id: { $ne: videoId },
+    $or: [{ tags: { $in: video.tags } }, { category: video.category }],
+  })
+    .sort({ views: -1 })
+    .limit(20)
+    .select("title thumbnail duration views channel createdAt");
+  // retuern the relted videos
+  return relatedVideos;
+};
