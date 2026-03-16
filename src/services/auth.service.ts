@@ -46,7 +46,7 @@ export const registerUserService = async ({
     }
 
     // if the user does not exists then create a new one
-    const user = await User.create({
+    const user = await new User({
       username,
       fullName,
       email,
@@ -58,7 +58,7 @@ export const registerUserService = async ({
     await user.save({ session });
 
     // create channel after creating the user
-    const channel = await Channel.create({
+    const channel = await new Channel({
       owner: user._id,
       name: fullName,
       handle: username,
