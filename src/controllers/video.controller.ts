@@ -5,6 +5,7 @@ import {
   addViewService,
   deleteCommentService,
   getCommentsService,
+  getRelatedVideosService,
   getSingleVideoService,
   getUploadSignatureService,
   postCommentService,
@@ -290,5 +291,23 @@ export const deleteComment = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(200, "Comment deleted successfully", null));
+  }
+);
+
+// Related Videos
+export const getRelatedVideos = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the videoId
+    const { videoId } = req.params;
+    // check if the video id is valid or not
+    if (!videoId) {
+      throw new ApiError(400, "Video ID is required");
+    }
+    // call the service
+    const relatedVideos = await getRelatedVideosService(videoId);
+    // give back the response to the client
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Related Videos Fetched", relatedVideos));
   }
 );

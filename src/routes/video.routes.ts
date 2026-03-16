@@ -5,6 +5,7 @@ import {
   addView,
   deleteComment,
   getComments,
+  getRelatedVideos,
   getSingleVideo,
   getUploadSignature,
   postComment,
@@ -39,7 +40,7 @@ router.get(
 // --- Uploading Video ---
 // For directly upload video from frontend I need 3 apis - 1st - signature assigning, 2nd - uploading video / creating video record in DB, 3rd - updating video metadata
 
-// Assigning browser a signaturee for authorization
+// Assigning browser a signature for authorization
 router.get("/upload-signature", verifyJwt, getUploadSignature);
 // Uploading video / Creating video record in DB
 router.post("/", verifyJwt, uploadVideo);
@@ -94,6 +95,14 @@ router.delete(
   verifyJwt,
   validate(commentParamSchema),
   deleteComment
+);
+
+// Related Video System
+router.get(
+  "/:videoId/realted",
+  optionalAuth,
+  validate(videoParamSchema),
+  getRelatedVideos
 );
 
 export default router;
