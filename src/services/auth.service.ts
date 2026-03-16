@@ -2,6 +2,7 @@ import { Channel } from "../models/channel.model";
 import { User } from "../models/user.model";
 import { ApiError } from "../utils/apiError";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // Register User Types
 interface RegisterUserPayload {
@@ -29,11 +30,16 @@ export const registerUserService = async ({
   email,
   password,
 }: RegisterUserPayload) => {
+  // Added session of mongoose
+  const session = await mongoose.startSession();
+
   try {
+    // Added transaction
+    session.startTransaction();
     // check if the user exists or not
     const existingUser = await User.findOne({
       $or: [{ email }, { username }],
-    });
+    }).session(session);
 
     if (existingUser) {
       throw new ApiError(409, "User already exists");
@@ -48,6 +54,9 @@ export const registerUserService = async ({
       subscribers: 0,
     });
 
+    // Saved user in session now cause needed user _id
+    await user.save({ session });
+
     // create channel after creating the user
     const channel = await Channel.create({
       owner: user._id,
@@ -55,16 +64,23 @@ export const registerUserService = async ({
       handle: username,
     });
 
+    // same as user
+    await channel.save({ session });
+
     // throw error if user registered but channel is not created successfully
     // NOTE: delete the user if channel is not created cause if user is created so channel must be created as well if channel creation failed then delete that user as well cause we don't want to save any user without channel
-    if (!channel) {
-      await User.findByIdAndDelete(user._id);
-      throw new ApiError(500, "Channel creation failed");
-    }
+    // if (!channel) {
+    //   await User.findByIdAndDelete(user._id);
+    //   throw new ApiError(500, "Channel creation failed");
+    // }
 
     // update the channel feild in user
     user.channel = channel._id;
-    await user.save({ validateBeforeSave: false });
+    await user.save({ session, validateBeforeSave: false });
+
+    // after saving the user with all the updated credential now commit the transaction and end the session
+    await session.commitTransaction();
+    session.endSession();
 
     // Return the user with out password and tokens
     const safeUser = await User.findById(user._id).select(
@@ -73,6 +89,9 @@ export const registerUserService = async ({
 
     return safeUser;
   } catch (error) {
+    // if something goes wrong abort the transaction then end the session
+    await session.abortTransaction();
+    session.endSession();
     throw error;
   }
 };

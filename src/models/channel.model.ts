@@ -42,21 +42,17 @@ const channelSchema = new mongoose.Schema(
     avatar: {
       url: {
         type: String,
-        required: true,
       },
       publicId: {
         type: String,
-        required: true,
       },
     },
     coverImage: {
       url: {
         type: String,
-        required: true,
       },
       publicId: {
         type: String,
-        required: true,
       },
     },
     subscriberCount: {
