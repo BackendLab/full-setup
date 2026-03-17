@@ -30,6 +30,7 @@ export const registerUserService = async ({
   email,
   password,
 }: RegisterUserPayload) => {
+  // This requires transaction cause if the either user creation or channel creation or both fails even the checks this whole process must rollback - that mena if one fails to exist then both can't exists
   // Added session of mongoose
   const session = await mongoose.startSession();
 
