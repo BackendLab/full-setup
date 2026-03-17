@@ -6,7 +6,7 @@ export const registerUserSchema = z.object({
     username: z.string().min(3),
     fullName: z.string().min(2),
     email: z.email(),
-    password: z.string().min(8).max(16),
+    password: z.string().min(8).max(64),
   }),
 });
 
@@ -20,6 +20,6 @@ export const loginUserSchema = z.object({
     password: z
       .string()
       .min(8, "Password must be 8 character long")
-      .max(16, "Password must not long than 16 characters"),
+      .max(64, "Password must not long than 16 characters"),
   }),
 });
