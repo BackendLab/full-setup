@@ -41,8 +41,8 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
   // Get all the data from user
   const { fullName, username, bio } = req.body;
   // Cherck if all the feilds are avaiable or not
-  if (!fullName || !username || !bio) {
-    throw new ApiError(400, "all feilds are required");
+  if (!fullName && !username && !bio) {
+    throw new ApiError(400, "One field is must");
   }
   // Call the service with user ID + all the feilds
   const updatedUser = await updateUserService(userId?.toString(), {
@@ -96,7 +96,7 @@ export const changePassword = asyncHandler(
       .json(
         new ApiResponse(
           200,
-          "Password Chnaged Successfully!, Please log-in again",
+          "Password Changed Successfully!, Please log-in again",
           null
         )
       );

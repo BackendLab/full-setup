@@ -120,7 +120,7 @@ export const loginUserService = async ({
     const isPasswordValid = await existingUser.comparePassword(password);
 
     if (!isPasswordValid) {
-      throw new ApiError(404, "User credentials are invalid");
+      throw new ApiError(401, "Wrong Password!");
     }
     // generate access Token & refresh Token
     // NOTE: Token generation are always syncronous

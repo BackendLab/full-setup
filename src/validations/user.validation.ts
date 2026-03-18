@@ -6,7 +6,7 @@ export const updateUserSchema = z.object({
   body: z.object({
     username: z.string().min(3).optional(),
     fullName: z.string().min(2).optional(),
-    bio: z.string().min(10).max(200).optional(),
+    bio: z.string().min(10).max(2000).optional(),
   }),
 });
 

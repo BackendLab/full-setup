@@ -170,18 +170,17 @@ export const deleteUserService = async (userId: string) => {
     const channel = await Channel.findOne({ owner: userId }).session(session);
     // if channel exists get all the channel video Id's
     if (channel) {
-      const videoIds = await Video.find(
-        { channel: channel._id },
-        { session }
-      ).distinct("_id");
+      const videoIds = await Video.find({ channel: channel._id })
+        .session(session)
+        .distinct("_id");
       // NOTE: Distict the method which is used to extract the value in array, it is same as select but select gives array of object but distinct gives array of values directly
       // after fetching all the videos delete all the views, likes, comment, sunbscriptions, videos as well etc
       await Promise.all([
-        Like.deleteMany({ video: { $in: videoIds } }, { session }),
-        Comment.deleteMany({ video: { $in: videoIds } }, { session }),
-        View.deleteMany({ video: { $in: videoIds } }, { session }),
-        Subscription.deleteMany({ channel: channel._id }, { session }),
-        Video.deleteMany({ video: { $in: videoIds } }, { session }),
+        Like.deleteMany({ video: { $in: videoIds } }).session(session),
+        Comment.deleteMany({ video: { $in: videoIds } }).session(session),
+        View.deleteMany({ video: { $in: videoIds } }).session(session),
+        Subscription.deleteMany({ channel: channel._id }).session(session),
+        Video.deleteMany({ video: { $in: videoIds } }).session(session),
       ]);
       // after deleting the channel data delete the cloud assests like avatar & cover image
       if (channel?.avatar?.publicId) {
@@ -191,19 +190,19 @@ export const deleteUserService = async (userId: string) => {
         await deleteFromCloudinary(channel.coverImage.publicId);
       }
       // delete the channel
-      await Channel.deleteOne({ _id: channel._id }, { session });
+      await Channel.deleteOne({ _id: channel._id }).session(session);
     }
     // then delete all the data related to user likes, comments, views, subscription
     await Promise.all([
-      Like.deleteMany({ user: user._id }, { session }),
-      View.deleteMany({ user: user._id }, { session }),
-      Comment.deleteMany({ iuser: user._id }, { session }),
-      Subscription.deleteMany({ subscriber: user._id }, { session }),
+      Like.deleteMany({ user: user._id }).session(session),
+      View.deleteMany({ user: user._id }).session(session),
+      Comment.deleteMany({ user: user._id }).session(session),
+      Subscription.deleteMany({ subscriber: user._id }).session(session),
     ]);
     // then delete the user
-    await User.deleteOne({ _id: user._id }, { session });
+    await User.deleteOne({ _id: user._id }).session(session);
     // commit transaction
-    session.commitTransaction();
+    await session.commitTransaction();
     session.endSession();
   } catch (error) {
     // if something fails abort the transaction and rollback

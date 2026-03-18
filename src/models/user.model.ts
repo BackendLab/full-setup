@@ -49,13 +49,11 @@ const userSchema = new mongoose.Schema(
       // must store hasehed password
       type: String,
       required: true,
-      minlength: 8,
-      maxlength: 16,
     },
     bio: {
       type: String,
       default: "",
-      maxlength: 200,
+      maxlength: 2000,
     },
 
     subscribers: {

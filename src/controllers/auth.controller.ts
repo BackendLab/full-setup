@@ -58,7 +58,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   });
   // give the response including cookies
   res
-    .status(201)
+    .status(200)
     .cookie("accessToken", accessToken, {
       httpOnly: true,
       sameSite: "strict",

@@ -9,7 +9,7 @@ import {
   updateUser,
   updateWatchHistory,
 } from "../controllers/user.controller";
-import { upload } from "../middlewares/multer.middleware";
+
 import { validate } from "../middlewares/validation.middleware";
 import {
   changePasswordSchema,
@@ -21,15 +21,20 @@ import { videoParamSchema } from "../validations/video.validation";
 const router = Router();
 
 // Secured Route
+// Get the user
 router.get("/me", verifyJwt, getCurrentUser);
+
+// Get the user profile
 router.patch("/profile", verifyJwt, validate(updateUserSchema), updateUser);
 
+// Change Password
 router.patch(
   "/change-password",
   verifyJwt,
   validate(changePasswordSchema),
   changePassword
 );
+// Delete User
 router.delete("/me", verifyJwt, deleteUser);
 
 // Watch History Routes
