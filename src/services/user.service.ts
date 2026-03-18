@@ -5,6 +5,12 @@ import { WatchHistory } from "../models/watchHistory.model";
 import { ApiError } from "../utils/apiError";
 import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
+import { Channel } from "../models/channel.model";
+import { Video } from "../models/video.model";
+import { Like } from "../models/like.model";
+import { Comment } from "../models/comment.model";
+import { View } from "../models/view.model";
+import { Subscription } from "../models/subscription.model";
 
 // Interface for Updating User
 interface updateUserPayload {
@@ -121,7 +127,7 @@ export const changePasswordService = async (
   const user = await User.findById(userId);
   // Check if user exists or not
   if (!user) {
-    throw new ApiError(401, "User does not exist");
+    throw new ApiError(404, "User does not exist");
   }
   // compare current password with the stored one
   const isMatch = await user.comparePassword(oldPassword);
@@ -145,21 +151,66 @@ export const changePasswordService = async (
 
 // Delete User Service
 export const deleteUserService = async (userId: string) => {
-  // get the user from DB
-  const user = await User.findById(userId);
+  // Add Transaction for consistent data deletion
+  // Start Session
+  const session = await mongoose.startSession();
 
-  if (!user) {
-    throw new ApiError(401, "User does not exist");
+  try {
+    // start transaction
+    session.startTransaction();
+    // get the user from DB
+    const user = await User.findById(userId).session(session);
+
+    // check if the user exists or not
+    if (!user) {
+      throw new ApiError(401, "User does not exist");
+    }
+
+    // get the channel from DB
+    const channel = await Channel.findOne({ owner: userId }).session(session);
+    // if channel exists get all the channel video Id's
+    if (channel) {
+      const videoIds = await Video.find(
+        { channel: channel._id },
+        { session }
+      ).distinct("_id");
+      // NOTE: Distict the method which is used to extract the value in array, it is same as select but select gives array of object but distinct gives array of values directly
+      // after fetching all the videos delete all the views, likes, comment, sunbscriptions, videos as well etc
+      await Promise.all([
+        Like.deleteMany({ video: { $in: videoIds } }, { session }),
+        Comment.deleteMany({ video: { $in: videoIds } }, { session }),
+        View.deleteMany({ video: { $in: videoIds } }, { session }),
+        Subscription.deleteMany({ channel: channel._id }, { session }),
+        Video.deleteMany({ video: { $in: videoIds } }, { session }),
+      ]);
+      // after deleting the channel data delete the cloud assests like avatar & cover image
+      if (channel?.avatar?.publicId) {
+        await deleteFromCloudinary(channel.avatar.publicId);
+      }
+      if (channel?.coverImage?.publicId) {
+        await deleteFromCloudinary(channel.coverImage.publicId);
+      }
+      // delete the channel
+      await Channel.deleteOne({ _id: channel._id }, { session });
+    }
+    // then delete all the data related to user likes, comments, views, subscription
+    await Promise.all([
+      Like.deleteMany({ user: user._id }, { session }),
+      View.deleteMany({ user: user._id }, { session }),
+      Comment.deleteMany({ iuser: user._id }, { session }),
+      Subscription.deleteMany({ subscriber: user._id }, { session }),
+    ]);
+    // then delete the user
+    await User.deleteOne({ _id: user._id }, { session });
+    // commit transaction
+    session.commitTransaction();
+    session.endSession();
+  } catch (error) {
+    // if something fails abort the transaction and rollback
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
   }
-  // delete all cloudinary files
-  if (user?.avatar?.publicId) {
-    await deleteFromCloudinary(user?.avatar?.publicId);
-  }
-  if (user?.coverImage?.publicId) {
-    await deleteFromCloudinary(user?.coverImage?.publicId);
-  }
-  // delete the user
-  await User.findByIdAndDelete(userId);
 };
 
 // Watch History Service
