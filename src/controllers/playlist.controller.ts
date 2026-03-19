@@ -91,4 +91,7 @@ export const addVideo = asyncHandler(async (req: Request, res: Response) => {
     userId.toString()
   );
   // give back the response to the client
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Video added successfully", videoAdded));
 });
