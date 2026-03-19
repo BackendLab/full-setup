@@ -7,6 +7,7 @@ import {
 } from "../controllers/playlist.controller";
 import { validate } from "../middlewares/validation.middleware";
 import {
+  addVideoSchema,
   createPlaylistSchema,
   playlistParamSchema,
   playlistQuerySchema,
@@ -28,6 +29,11 @@ router.get(
 router.post("/", verifyJwt, validate(createPlaylistSchema), createPlaylist);
 
 // Add Video in Playlist
-router.post("/:playlistId/video", verifyJwt, addVideo);
+router.post(
+  "/:playlistId/video",
+  verifyJwt,
+  validate(addVideoSchema),
+  addVideo
+);
 
 export default router;

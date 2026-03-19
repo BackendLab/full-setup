@@ -23,3 +23,13 @@ export const createPlaylistSchema = z.object({
     visibility: z.enum(["PUBLIC", "PRIVATE"]),
   }),
 });
+
+// Add Video Validation Schema
+export const addVideoSchema = z.object({
+  params: z.object({
+    playlistId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Playlist ID"),
+  }),
+  body: z.object({
+    videoId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Video ID"),
+  }),
+});
