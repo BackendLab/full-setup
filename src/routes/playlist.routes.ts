@@ -6,6 +6,7 @@ import {
 } from "../controllers/playlist.controller";
 import { validate } from "../middlewares/validation.middleware";
 import {
+  createPlaylistSchema,
   playlistParamSchema,
   playlistQuerySchema,
 } from "../validations/playlist.validation";
@@ -23,6 +24,6 @@ router.get(
 );
 
 // Create Single Playlist
-router.post("/", verifyJwt, createPlaylist);
+router.post("/", verifyJwt, validate(createPlaylistSchema), createPlaylist);
 
 export default router;
