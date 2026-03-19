@@ -14,6 +14,7 @@ import {
   deleteVideoSchema,
   playlistParamSchema,
   playlistQuerySchema,
+  updatePlaylistSchema,
 } from "../validations/playlist.validation";
 import { verifyJwt } from "../middlewares/auth.middleware";
 
@@ -48,6 +49,11 @@ router.delete(
 );
 
 // Update Playlist
-router.patch("/:playlistId", verifyJwt, updatePlaylist);
+router.patch(
+  "/:playlistId",
+  verifyJwt,
+  validate(updatePlaylistSchema),
+  updatePlaylist
+);
 
 export default router;
