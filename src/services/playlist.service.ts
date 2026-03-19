@@ -24,7 +24,7 @@ export const getSinglePlaylistService = async (
   const skip = (page - 1) * limit;
 
   // get every playlistVideo
-  const [playlistVideos, totalPlaylistVideos]: [any[], number] = // [any[], number] is used to give type safety to totalPlaylistVideos cause it was showing undefined
+  const [playlistVideos, totalPlaylistVideos]: [any[], number] = // [any[], number] is used to give type safety to totalPlaylistVideos cause it was showing undefined. NOTE: this solution is given by chatgpt and I don't know what the fuck is this "yet".
     await Promise.all([
       PlaylistVideo.find({ playlist: playlistId })
         .sort({ position: 1 })
@@ -57,4 +57,23 @@ export const getSinglePlaylistService = async (
     },
     isOwner,
   };
+};
+
+// Create Playlist
+export const createPlaylistService = async (
+  // get the data from user
+  userId: string,
+  title: string,
+  visibility: string,
+  description?: string
+) => {
+  // create the playlist
+  const playlistCreated = await Playlist.create({
+    owner: userId,
+    title,
+    description,
+    visibility,
+  });
+  // return the created Playlist
+  return playlistCreated;
 };
