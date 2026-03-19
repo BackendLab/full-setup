@@ -154,5 +154,10 @@ export const updatePlaylist = asyncHandler(
       { title, description, visibility }
     );
     // give back the response to the client
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Playlist updated successfully", updatedPlaylist)
+      );
   }
 );

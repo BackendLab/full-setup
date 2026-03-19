@@ -158,7 +158,7 @@ export const updatePlaylistService = async (
   { title, visibility, description }: UpdatePlaylistPayload
 ) => {
   // find the playlist by id and check ownership
-  const playlist = await Playlist.findById({ _id: playlistId, owner: userId });
+  const playlist = await Playlist.findOne({ _id: playlistId, owner: userId });
 
   if (!playlist) {
     throw new ApiError(404, "Playlist Not Found");
@@ -166,10 +166,10 @@ export const updatePlaylistService = async (
   // update the feilds
   playlist.title = title;
   playlist.description = description;
-  playlist.Visibility = visibility;
+  playlist.visibility = visibility;
 
   // save the playlist after updation
-  await playlist.save({ validateBeforeSave: false });
+  await playlist.save();
 
   // return the updated playlist
   return {
