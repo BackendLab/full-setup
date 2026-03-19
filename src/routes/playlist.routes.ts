@@ -56,4 +56,7 @@ router.patch(
   updatePlaylist
 );
 
+// Delete Playlist
+router.delete("/:playlistId", verifyJwt);
+
 export default router;

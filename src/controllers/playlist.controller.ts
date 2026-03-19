@@ -4,6 +4,7 @@ import { ApiError } from "../utils/apiError";
 import {
   addVideoService,
   createPlaylistService,
+  deletePlaylistService,
   deleteVideoService,
   getSinglePlaylistService,
   updatePlaylistService,
@@ -159,5 +160,25 @@ export const updatePlaylist = asyncHandler(
       .json(
         new ApiResponse(200, "Playlist updated successfully", updatedPlaylist)
       );
+  }
+);
+
+// Delete Playlist
+export const deletePlaylist = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the userId and Playlist id
+    const userId = req.user?._id;
+    const { playlistId } = req.params;
+    // check if the user exists or not
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized request");
+    }
+    // check if the playlist exists or not
+    if (!playlistId) {
+      throw new ApiError(400, "Playlist ID is required");
+    }
+    // call the service
+    await deletePlaylistService(playlistId, userId.toString());
+    // give back the response to the client
   }
 );
