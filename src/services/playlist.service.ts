@@ -77,3 +77,43 @@ export const createPlaylistService = async (
   // return the created Playlist
   return playlistCreated;
 };
+
+// add video to playlist
+export const addVideoService = async (
+  // get the id's
+  playlistId: string,
+  videoId: string,
+  userId: string
+) => {
+  try {
+    // get the playlist and update the video counter
+    const playlist = await Playlist.findByIdAndUpdate(
+      { _id: playlistId, owner: userId },
+      { $inc: { videoCount: 1 } },
+      { new: true }
+    );
+    // check if the playlist exists or not
+    if (!playlist) {
+      throw new ApiError(404, "Playlist Not found!");
+    }
+    // calculate the positon of video
+    const position = playlist.videoCount;
+    // create the playlist video
+    const addPlaylistVideo = await PlaylistVideo.create({
+      playlist: playlistId,
+      video: videoId,
+      position,
+    });
+    // return the playlist video
+    return addPlaylistVideo;
+  } catch (error: any) {
+    // check if the video is already there then update the video count and throw error
+    if (error.code === 11000) {
+      await Playlist.findByIdAndUpdate(playlistId, {
+        $inc: { videoCount: -1 },
+      });
+      throw new ApiError(400, "Video already in playlist");
+    }
+    throw error;
+  }
+};
