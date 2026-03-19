@@ -173,7 +173,7 @@ export const deleteUserService = async (userId: string) => {
       const videoIds = await Video.find({ channel: channel._id })
         .session(session)
         .distinct("_id");
-      // NOTE: Distict the method which is used to extract the value in array, it is same as select but select gives array of object but distinct gives array of values directly
+      // NOTE: Distict is the method which is used to extract the value in array, it is same as select but select gives array of object but distinct gives array of values directly
       // after fetching all the videos delete all the views, likes, comment, sunbscriptions, videos as well etc
       await Promise.all([
         Like.deleteMany({ video: { $in: videoIds } }).session(session),

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Playlist } from "../models/playlist.model";
 import { PlaylistVideo } from "../models/playlistVideo.model";
 import { ApiError } from "../utils/apiError";
@@ -177,4 +178,43 @@ export const updatePlaylistService = async (
     description: playlist.description,
     visibility: playlist.visibility,
   };
+};
+
+// Delete Playlist
+export const deletePlaylistService = async (
+  // get the id's
+  playlistId: string,
+  userId: string
+) => {
+  // start session and transaction
+  const session = await mongoose.startSession();
+  try {
+    // add transaction
+    session.startTransaction();
+    // find the playlist and check ownership
+    const playlist = await Playlist.findOne({
+      _id: playlistId,
+      owner: userId,
+    }).session(session);
+    // check if playlist exists or not
+    if (!playlist) {
+      throw new ApiError(404, "Playlist Not Found");
+    }
+    // delete all the playlist videos first cause it's a child
+    if (playlist) {
+      await PlaylistVideo.deleteMany({ playlist: playlistId }).session(session);
+    }
+    // delete the Playlist
+    await Playlist.deleteOne({ _id: playlistId, owner: userId }).session(
+      session
+    );
+    // end session and transaction
+    await session.commitTransaction();
+    session.endSession();
+  } catch (error) {
+    // if something breaks abort and end session
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 };
