@@ -10,6 +10,7 @@ import { validate } from "../middlewares/validation.middleware";
 import {
   addVideoSchema,
   createPlaylistSchema,
+  deleteVideoSchema,
   playlistParamSchema,
   playlistQuerySchema,
 } from "../validations/playlist.validation";
@@ -38,6 +39,11 @@ router.post(
 );
 
 // Delete Video from Playlist
-router.delete("/:playlistId/videos/:videoId", verifyJwt, deleteVideo);
+router.delete(
+  "/:playlistId/videos/:videoId",
+  verifyJwt,
+  validate(deleteVideoSchema),
+  deleteVideo
+);
 
 export default router;

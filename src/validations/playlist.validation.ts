@@ -33,3 +33,11 @@ export const addVideoSchema = z.object({
     videoId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Video ID"),
   }),
 });
+
+// Delete Video Validation Schema
+export const deleteVideoSchema = z.object({
+  params: z.object({
+    playlistId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Playlist ID"),
+    videoId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Video ID"),
+  }),
+});
