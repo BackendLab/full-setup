@@ -180,5 +180,8 @@ export const deletePlaylist = asyncHandler(
     // call the service
     await deletePlaylistService(playlistId, userId.toString());
     // give back the response to the client
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Playlist Deleted Successfully", null));
   }
 );

@@ -3,6 +3,7 @@ import { optionalAuth } from "../middlewares/optionalAuth.middleware";
 import {
   addVideo,
   createPlaylist,
+  deletePlaylist,
   deleteVideo,
   getSinglePlaylist,
   updatePlaylist,
@@ -57,6 +58,11 @@ router.patch(
 );
 
 // Delete Playlist
-router.delete("/:playlistId", verifyJwt);
+router.delete(
+  "/:playlistId",
+  verifyJwt,
+  validate(playlistParamSchema),
+  deletePlaylist
+);
 
 export default router;
