@@ -4,7 +4,6 @@ import { PlaylistState } from "../constants";
 export enum PlaylistVisibility {
   PUBLIC = "PUBLIC",
   PRIVATE = "PRIVATE",
-  UNLISTED = "UNLISTED",
 }
 export interface IPlaylist extends Document {
   title: string;
@@ -21,12 +20,12 @@ const playlistSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      maxLength: 120,
+      maxlength: 120,
     },
 
     description: {
       type: String,
-      maxLength: 1000,
+      maxlength: 2000,
     },
 
     owner: {

@@ -1,8 +1,12 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
-import { getSinglePlaylistService } from "../services/playlist.service";
+import {
+  createPlaylistService,
+  getSinglePlaylistService,
+} from "../services/playlist.service";
 import { ApiResponse } from "../utils/apiResponse";
+import { templateLiteral } from "zod";
 
 export const getSinglePlaylist = asyncHandler(
   async (req: Request, res: Response) => {
@@ -28,5 +32,36 @@ export const getSinglePlaylist = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(200, "Playlist fetched successfully", playlist));
+  }
+);
+
+// Create Playlist
+export const createPlaylist = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the userId
+    const userId = req.user?._id;
+    // check if the user exists or not
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized Resquest");
+    }
+    // get the Playlist data from req.body
+    const { title, description, visibility } = req.body;
+    // check if the data is missing or not
+    if (!title || title.trim() === "") {
+      throw new ApiError(400, "Title is required");
+    }
+    // call the service
+    const createdPlaylist = await createPlaylistService(
+      userId.toString(),
+      title,
+      description,
+      visibility
+    );
+    // give back the reposne to the client
+    res
+      .status(201)
+      .json(
+        new ApiResponse(201, "Playlist created successfully", createdPlaylist)
+      );
   }
 );
