@@ -26,7 +26,7 @@ const playlistVideoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const PlaylistVideo = mongoose.model(
+export const PlaylistVideo = mongoose.model<IPlaylistVideo>(
   "PalylistVideo",
   playlistVideoSchema
 );
