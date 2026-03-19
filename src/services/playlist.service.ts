@@ -1,7 +1,12 @@
 import { Playlist } from "../models/playlist.model";
 import { PlaylistVideo } from "../models/playlistVideo.model";
-import { VideoVisibility } from "../models/video.model";
 import { ApiError } from "../utils/apiError";
+
+interface UpdatePlaylistPayload {
+  title: string;
+  visibility: string;
+  description?: string;
+}
 
 export const getSinglePlaylistService = async (
   playlistId: string,
@@ -143,4 +148,33 @@ export const deleteVideoService = async (
   await Playlist.findByIdAndUpdate(playlistId, { $inc: { videoCount: -1 } });
 
   return;
+};
+
+// Update playlist
+export const updatePlaylistService = async (
+  // get the id's
+  playlistId: string,
+  userId: string,
+  { title, visibility, description }: UpdatePlaylistPayload
+) => {
+  // find the playlist by id and check ownership
+  const playlist = await Playlist.findById({ _id: playlistId, owner: userId });
+
+  if (!playlist) {
+    throw new ApiError(404, "Playlist Not Found");
+  }
+  // update the feilds
+  playlist.title = title;
+  playlist.description = description;
+  playlist.Visibility = visibility;
+
+  // save the playlist after updation
+  await playlist.save({ validateBeforeSave: false });
+
+  // return the updated playlist
+  return {
+    title: playlist.title,
+    description: playlist.description,
+    visibility: playlist.visibility,
+  };
 };

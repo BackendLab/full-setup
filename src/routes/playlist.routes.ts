@@ -5,6 +5,7 @@ import {
   createPlaylist,
   deleteVideo,
   getSinglePlaylist,
+  updatePlaylist,
 } from "../controllers/playlist.controller";
 import { validate } from "../middlewares/validation.middleware";
 import {
@@ -45,5 +46,8 @@ router.delete(
   validate(deleteVideoSchema),
   deleteVideo
 );
+
+// Update Playlist
+router.patch("/:playlistId", verifyJwt, updatePlaylist);
 
 export default router;

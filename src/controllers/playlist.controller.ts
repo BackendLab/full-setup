@@ -6,6 +6,7 @@ import {
   createPlaylistService,
   deleteVideoService,
   getSinglePlaylistService,
+  updatePlaylistService,
 } from "../services/playlist.service";
 import { ApiResponse } from "../utils/apiResponse";
 import { templateLiteral } from "zod";
@@ -121,3 +122,37 @@ export const deleteVideo = asyncHandler(async (req: Request, res: Response) => {
     .status(204)
     .json(new ApiResponse(204, "Video deleted successfully", null));
 });
+
+// Update Playlist
+export const updatePlaylist = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get the playlist id and user id
+    const userId = req.user?._id;
+    const { playlistId } = req.params;
+    // check if the user exists or not
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized Request");
+    }
+    // check if the Playlist exists or not
+    if (!playlistId) {
+      throw new ApiError(400, "Playlist Id is required");
+    }
+
+    // get the data to update
+    const { title, description, visibility } = req.body;
+    // check if the data exists or not
+    if (!title || title.trim() === "") {
+      throw new ApiError(400, "Title is required");
+    }
+    if (!visibility) {
+      throw new ApiError(400, "Visibility is required");
+    }
+    // call the service
+    const updatedPlaylist = await updatePlaylistService(
+      playlistId,
+      userId.toString(),
+      { title, description, visibility }
+    );
+    // give back the response to the client
+  }
+);
