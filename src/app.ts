@@ -7,6 +7,8 @@ import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import subscriptionRoutes from "./routes/subscription.routes";
 import channelRoutes from "./routes/channel.routes";
+import videoRoutes from "./routes/video.routes";
+import playlistRoutes from "./routes/playlist.routes";
 
 export const app = express();
 
@@ -36,3 +38,7 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/subscription", subscriptionRoutes);
 // Channel Routes
 app.use("/api/v1/channel", channelRoutes);
+// Video Routes
+app.use("/api/v1/video", videoRoutes);
+// Playlist Routes
+app.use("/api/v1/playlist", playlistRoutes);

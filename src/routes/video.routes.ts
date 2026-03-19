@@ -84,7 +84,7 @@ router.post(
 );
 // Update Comment
 router.patch(
-  "/:videoid/:commentId",
+  "/:videoId/:commentId",
   verifyJwt,
   validate(updateCommentSchema),
   updateComment

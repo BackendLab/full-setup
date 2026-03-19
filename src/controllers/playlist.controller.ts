@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import {
+  addVideoService,
   createPlaylistService,
   getSinglePlaylistService,
 } from "../services/playlist.service";
@@ -65,3 +66,29 @@ export const createPlaylist = asyncHandler(
       );
   }
 );
+
+// Add Video to Playlist
+export const addVideo = asyncHandler(async (req: Request, res: Response) => {
+  // get the playlistId, videoId and userId
+  const userId = req.user?._id;
+  const { playlistId } = req.params;
+  const { videoId } = req.body;
+  // check if the user exists or not
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+  // check if the videoId and playlistId are valid or not
+  if (!playlistId) {
+    throw new ApiError(400, "Playlist ID is required");
+  }
+  if (!videoId) {
+    throw new ApiError(400, "Video ID is required");
+  }
+  // call the service
+  const videoAdded = await addVideoService(
+    playlistId,
+    videoId,
+    userId.toString()
+  );
+  // give back the response to the client
+});

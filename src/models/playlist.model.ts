@@ -9,6 +9,7 @@ export interface IPlaylist extends Document {
   title: string;
   description?: string;
   owner: mongoose.Types.ObjectId;
+  videoCount: number;
   status: PlaylistState;
   visibility: PlaylistVisibility;
   createdAt: Date;
@@ -32,6 +33,10 @@ const playlistSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    videoCount: {
+      type: Number,
+      default: 0,
     },
     visibility: {
       type: String,

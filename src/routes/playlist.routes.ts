@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { optionalAuth } from "../middlewares/optionalAuth.middleware";
 import {
+  addVideo,
   createPlaylist,
   getSinglePlaylist,
 } from "../controllers/playlist.controller";
@@ -25,5 +26,8 @@ router.get(
 
 // Create Single Playlist
 router.post("/", verifyJwt, validate(createPlaylistSchema), createPlaylist);
+
+// Add Video in Playlist
+router.post("/:playlistId/video", verifyJwt, addVideo);
 
 export default router;
