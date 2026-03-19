@@ -94,7 +94,7 @@ export const addVideoService = async (
     );
     // check if the playlist exists or not
     if (!playlist) {
-      throw new ApiError(404, "Playlist Not found!");
+      throw new ApiError(404, "Playlist Not Found!");
     }
     // calculate the positon of video
     const position = playlist.videoCount;
@@ -116,4 +116,31 @@ export const addVideoService = async (
     }
     throw error;
   }
+};
+
+// Delete video from playlist
+export const deleteVideoService = async (
+  // get the id's
+  playlistId: string,
+  videoId: string,
+  userId: string
+) => {
+  // find the playlist and check ownership
+  const playlist = await Playlist.findById({
+    playlist: playlistId,
+    owner: userId,
+  });
+  // check if the playlist exists or not
+  if (!playlist) {
+    throw new ApiError(404, "Playlist Not Found!");
+  }
+  // Delete the video from playlist
+  await PlaylistVideo.deleteOne({
+    playlist: playlistId,
+    videoId,
+  });
+  // decrement video count from playlist
+  await Playlist.findByIdAndUpdate(playlistId, { $inc: { videoCount: -1 } });
+
+  return;
 };

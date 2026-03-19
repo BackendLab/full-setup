@@ -3,6 +3,7 @@ import { optionalAuth } from "../middlewares/optionalAuth.middleware";
 import {
   addVideo,
   createPlaylist,
+  deleteVideo,
   getSinglePlaylist,
 } from "../controllers/playlist.controller";
 import { validate } from "../middlewares/validation.middleware";
@@ -35,5 +36,8 @@ router.post(
   validate(addVideoSchema),
   addVideo
 );
+
+// Delete Video from Playlist
+router.delete("/:playlistId/videos/:videoId", verifyJwt, deleteVideo);
 
 export default router;
