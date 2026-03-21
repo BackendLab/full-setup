@@ -29,6 +29,13 @@ import {
 
 const router = Router();
 
+// --- Uploading Video ---
+// For directly upload video from frontend I need 3 apis - 1st - signature assigning, 2nd - uploading video / creating video record in DB, 3rd - updating video metadata
+// Assigning browser a signature for authorization
+router.get("/upload-signature", verifyJwt, getUploadSignature);
+// Uploading video / Creating video record in DB
+router.post("/upload", verifyJwt, uploadVideo);
+
 // Get Single Video
 router.get(
   "/:videoId",
@@ -37,13 +44,6 @@ router.get(
   getSingleVideo
 );
 
-// --- Uploading Video ---
-// For directly upload video from frontend I need 3 apis - 1st - signature assigning, 2nd - uploading video / creating video record in DB, 3rd - updating video metadata
-
-// Assigning browser a signature for authorization
-router.get("/upload-signature", verifyJwt, getUploadSignature);
-// Uploading video / Creating video record in DB
-router.post("/", verifyJwt, uploadVideo);
 // Updating Video Metadata
 router.patch(
   "/:videoId",
