@@ -206,13 +206,13 @@ export const addViewService = async (
   // check who is the user - is the user logged in or not
   let viewerKey: string = "";
 
-  let newSessionId = null;
+  let newSessionId = null; // session is assigned to logged out user, so that they can watch the video easily it will be check if the browser contains that session id or not, if not then we create one and if it exists then use that
   if (userId) {
     viewerKey = `user-${userId}`;
   } else {
     if (!sessionId) {
       sessionId = crypto.randomUUID();
-      // set session cookie fro 30 days
+      // set session cookie for 30 days
       newSessionId = sessionId;
     }
     viewerKey = sessionId;
@@ -231,23 +231,22 @@ export const addViewService = async (
       video: videoId,
       lastCountedAt: now,
     });
-    // after crerating view document icrement the vierw count in video
+    // after crerating view document icrement the view count in video
     await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
 
     return { counted: true, newSessionId };
   }
 
-  const VIEW_WINDOW = 1000 * 60 * 60 * 3;
+  const VIEW_WINDOW = 1000 * 60 * 60 * 3; // set view window of 3 hrs
 
-  const timeDiff = now.getTime() - existingView.lastCountedAt.getTime();
+  const timeDiff = now.getTime() - existingView.lastCountedAt.getTime(); // this calculates the time difference - if the user watched the video at 12 P.M. and right now it's 4 P.M. then the difference is 4 hrs, it will store the difference
+
+  // After that we check if the time difference is greater than 3 hrs count the view on the same video otherwise it won't count the view
 
   if (timeDiff > VIEW_WINDOW) {
     existingView.lastCountedAt = now;
-
     await existingView.save({ validateBeforeSave: false });
-
     await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
-
     return { counted: true, newSessionId };
   }
 
@@ -334,8 +333,14 @@ export const postCommentService = async (
   videoId: string,
   content: string
 ) => {
-  // check if the video exists or not
+  // ge the video
   const video = await Video.findById({ video: videoId }).select("_id");
+
+  // check if the video exists or not
+  if (!video) {
+    throw new ApiError(404, "Video not Found");
+  }
+
   // if video exists then create a comment
   const postComment = await Comment.create({
     user: userId,
