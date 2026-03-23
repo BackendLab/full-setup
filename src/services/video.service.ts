@@ -21,6 +21,11 @@ interface UploadVideoPayload {
     publicId: string;
   };
   duration: number;
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  visibility: VideoVisibility;
 }
 interface VideoResult {
   video: {
@@ -146,6 +151,14 @@ export const uploadVideoService = async (
   if (!payload.videoFile.url || !payload.videoFile.publicId) {
     throw new ApiError(400, "Invalid Video File Payload");
   }
+  // check all the required feilds
+  if (!payload.duration || payload.duration === 0) {
+    throw new ApiError(400, "Invalid duration");
+  }
+
+  if (!payload.title || payload.title.trim() === "") {
+    throw new ApiError(400, "Title is required");
+  }
   // create the video record in DB but keep the metadata empty
   const createVideoRecord = await Video.create({
     channel: channelId,
@@ -154,11 +167,11 @@ export const uploadVideoService = async (
       publicId: payload.videoFile.publicId,
     },
     duration: payload.duration,
-    title: "",
-    description: "",
-    category: "",
-    tags: [],
-    visibility: "PRIVATE",
+    title: payload.title,
+    description: payload.description || "",
+    category: payload.category,
+    tags: payload.tags || [],
+    visibility: payload.visibility || "PRIVATE",
     views: 0,
     likesCount: 0,
     commentsCount: 0,

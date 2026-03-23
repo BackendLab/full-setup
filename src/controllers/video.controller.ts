@@ -45,7 +45,7 @@ export const getSingleVideo = asyncHandler(
 // Get Upload Signature
 export const getUploadSignature = asyncHandler(
   async (req: Request, res: Response) => {
-    // In this request client won't send anything just call for getting the signature, so no requset
+    // In this request client won't send anything just call for getting the signature, so no request
     // call the service
     const uploadSignature = await getUploadSignatureService();
     // give back the response to the client
@@ -69,16 +69,27 @@ export const uploadVideo = asyncHandler(async (req: Request, res: Response) => {
   if (!channel) {
     throw new ApiError(404, "Channel Not Found");
   }
+  console.log(req);
   // get the videoFile from the user
-  const { videoFile, duration } = req.body;
-  // check if the videoFile exists or not
-  if (!videoFile || !duration) {
-    throw new ApiError(400, "VideoFile is Required");
-  }
+  const {
+    videoFile,
+    duration,
+    title,
+    description,
+    category,
+    tags,
+    visibility,
+  } = req.body;
+
   // call the service
   const uploadVideo = await uploadVideoService(channel._id.toString(), {
     videoFile,
     duration,
+    title,
+    description,
+    category,
+    tags,
+    visibility,
   });
   // give back the response to the client
   res
