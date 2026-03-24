@@ -1,7 +1,7 @@
-export const generateThumbnails = async (
+export const generateThumbnails = (
   publicId: string,
   duration: number
-) => {
+): string[] => {
   // get the cloud name
   const cloudName = Bun.env.CLOUDINARY_CLOUD_NAME;
   // get the timestamps from the video duration
@@ -13,7 +13,8 @@ export const generateThumbnails = async (
   // NOTE: timestamps is calculated to get the thumbnails from start, middel nad end of the video automaticall, so middle is calculated by divinding the duration, and end is calculated is calculated by subtracting 2 seconds from the duration length or keep 1 second whichever is higher
 
   // return the api
-  return timestamps.map((seconds) => {
-    `https://res.cloudinary.com/${cloudName}/video/upload/so_${seconds}/${publicId}.jpg`;
-  });
+  return timestamps.map(
+    (seconds) =>
+      `https://res.cloudinary.com/${cloudName}/video/upload/so_${seconds}/${publicId}.jpg`
+  );
 };

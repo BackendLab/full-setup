@@ -74,6 +74,7 @@ export const uploadVideo = asyncHandler(async (req: Request, res: Response) => {
   const {
     videoFile,
     duration,
+    thumbnail,
     title,
     description,
     category,
@@ -85,6 +86,7 @@ export const uploadVideo = asyncHandler(async (req: Request, res: Response) => {
   const uploadVideo = await uploadVideoService(channel._id.toString(), {
     videoFile,
     duration,
+    thumbnail,
     title,
     description,
     category,

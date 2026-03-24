@@ -7,6 +7,7 @@ import crypto from "crypto";
 import { View } from "../models/view.model";
 import { Like } from "../models/like.model";
 import { Comment } from "../models/comment.model";
+import { generateThumbnails } from "../utils/generateThumbnails";
 
 interface ChannelProfile {
   _id: string;
@@ -21,6 +22,7 @@ interface UploadVideoPayload {
     publicId: string;
   };
   duration: number;
+  thumbnail: string;
   title: string;
   description: string;
   category: string;
@@ -158,6 +160,16 @@ export const uploadVideoService = async (
 
   if (!payload.title || payload.title.trim() === "") {
     throw new ApiError(400, "Title is required");
+  }
+
+  // check if the thumbnail is valid or not
+  const validThumbnail = generateThumbnails(
+    payload.videoFile.publicId,
+    payload.duration
+  );
+
+  if (!payload.thumbnail || !validThumbnail.includes(payload.thumbnail)) {
+    throw new ApiError(400, "Invalid thumbnail");
   }
   // create the video record in DB but keep the metadata empty
   const createVideoRecord = await Video.create({
