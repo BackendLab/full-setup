@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 export const videoParamSchema = z.object({
   params: z.object({
@@ -16,6 +16,8 @@ export const UploadVideoSchema = z.object({
   title: z.string().min(5).max(250),
   description: z.string().max(1000).optional(),
   category: z.string(),
+  tags: z.array(z.string()).optional(),
+  visibility: z.enum(["PUBLIC", "PRIVATE", "UNLISTED"]),
 });
 
 export const updateMetadataSchema = z.object({
