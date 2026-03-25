@@ -12,6 +12,10 @@ export const UploadVideoSchema = z.object({
     publicId: z.string(),
   }),
   duration: z.number(),
+  thumbnail: z.string(),
+  title: z.string().min(5).max(250),
+  description: z.string().max(1000).optional(),
+  category: z.string(),
 });
 
 export const updateMetadataSchema = z.object({
