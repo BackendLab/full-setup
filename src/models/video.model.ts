@@ -45,13 +45,13 @@ const videoSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      minLenght: 5,
-      maxLength: 150,
+      minlenght: 5,
+      maxlength: 250,
     },
     description: {
       type: String,
-      minLength: 5,
-      maxLength: 1000,
+      minlength: 5,
+      maxlength: 1000,
     },
     thumbnail: {
       url: {
